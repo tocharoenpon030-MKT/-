@@ -265,13 +265,11 @@ function parseSummarySheet(rows) {
 
   const ratios = [];
   for (const row of rows) {
-    if (row[0]==='สัดส่วนขายออก' && row[1] && row[1]!=='รวมทุกกลุ่ม') {
-      // เดือน 1-12 สัดส่วน
-      const r68 = cols68.map(c=>n(row[c]));
-      const r69 = cols69.map(c=>n(row[c]));
-      ratios.push({ name:row[1], r68, r69 });
-    }
-  }
+    if (
+  String(row[0] || '').trim() === 'สัดส่วนขายออก' &&
+  String(row[1] || '').trim() &&
+  String(row[1] || '').trim() !== 'รวมทุกกลุ่ม'
+) {
 
   // ตรวจสอบมีเดือนไหนบ้างใน 2569 (ไม่ใช่ 0 และไม่ใช่ null)
   const activeMonths69 = [];
