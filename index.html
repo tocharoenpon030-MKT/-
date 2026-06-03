@@ -660,9 +660,9 @@ function renderDetail(rows, contentId, city) {
     document.getElementById(contentId+'-table').innerHTML = buildTable(activeGrp);
   }
 
-  // สร้าง filter buttons
-  let btns = allGroups.map(g=>
-    `<button class="grp-btn${g===activeGrp?' active':''}" onclick="window.__setGrp_${contentId}('${g}')">${g}</button>`
+  // สร้าง filter buttons — ใช้ data-grp แทน onclick string เพื่อรองรับอักขระพิเศษ
+  let btns = allGroups.map((g,i)=>
+    `<button class="grp-btn${i===0?' active':''}" data-grp="${i}">${g}</button>`
   ).join('');
 
   document.getElementById(contentId).innerHTML = `
@@ -670,13 +670,15 @@ function renderDetail(rows, contentId, city) {
     <div class="grp-filter" id="${contentId}-btns">${btns}</div>
     <div id="${contentId}-table">${buildTable(activeGrp)}</div>`;
 
-  window[`__setGrp_${contentId}`] = function(g) {
-    activeGrp = g;
-    document.querySelectorAll(`#${contentId}-btns .grp-btn`).forEach(b=>{
-      b.classList.toggle('active', b.textContent===g);
-    });
+  document.getElementById(contentId+'-btns').addEventListener('click', function(e) {
+    const btn = e.target.closest('.grp-btn');
+    if (!btn) return;
+    const idx = parseInt(btn.dataset.grp);
+    activeGrp = allGroups[idx];
+    this.querySelectorAll('.grp-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
     document.getElementById(contentId+'-table').innerHTML = buildTable(activeGrp);
-  };
+  });
 }
 
 // ══════════════════════════════════════════════
