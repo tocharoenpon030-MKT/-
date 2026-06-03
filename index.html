@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สรุปกำไรขาย</title>
+<link rel="preconnect" href="[fonts.googleapis.com](https://fonts.googleapis.com)">
+<link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap)" rel="stylesheet">
+<style>
+:root {
+  --bg:      #ffffff;
+  --surface: #f8f9fa;
+  --surface2:#f0f1f3;
+  --border:  #e2e5e9;
+  --accent:  #e07b1e;
+  --accent2: #2563eb;
+  --green:   #16a34a;
+  --red:     #dc2626;
+  --yellow:  #d97706;
+  --text:    #111827;
+  --muted:   #6b7280;
+  --rebate:  #16a34a;
+  --font:    'Sarabun', sans-serif;
+  --mono:    'IBM Plex Mono', monospace;
+  --radius:  10px;
+  --c65:     #6366f1;
+  --c66:     #0ea5e9;
+  --c67:     #10b981;
+  --c68:     #e07b1e;
+  --c69:     #d97706;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+.nav {
+  background: #111827;
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: 0 1px 0 rgba(255,255,255,.08);
+  flex-wrap: wrap;
+}
+.nav-brand {
+  color: var(--accent);
+  font-size: .95rem;
+  font-weight: 700;
+  padding: 13px 20px;
+  border-right: 1px solid rgba(255,255,255,.1);
+  white-space: nowrap;
+  letter-spacing: .3px;
+}
+.nav-tabs { display: flex; overflow-x: auto; }
+.nav-tab {
+  color: rgba(255,255,255,.55);
+  padding: 13px 18px;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  white-space: nowrap;
+  font-size: .82rem;
+  font-weight: 500;
+  transition: color .15s, border-color .15s, background .15s;
+  letter-spacing: .2px;
+}
+.nav-tab:hover { color: rgba(255,255,255,.9); background: rgba(255,255,255,.05); }
+.nav-tab.active { color: #fff; border-bottom-color: var(--accent); }
+
+/* ── PAGES ── */
+.page { display: none; padding: 24px 20px; max-width: 1280px; margin: 0 auto; }
+.page.active { display: block; }
+
+/* ── TYPOGRAPHY ── */
+.page-title { font-size: 1.25rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.page-sub   { font-size: .82rem; color: var(--muted); margin-bottom: 20px; }
+.sec-title  {
+  font-size: .88rem; font-weight: 700; color: var(--text);
+  margin: 22px 0 10px; padding-left: 10px;
+  border-left: 3px solid var(--accent);
+  letter-spacing: .2px;
+}
+
+/* ── STAT CARDS ── */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.card-label { font-size: .73rem; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+.card-value { font-family: var(--mono); font-size: 1.25rem; font-weight: 500; color: var(--text); }
+.card-value.g { color: var(--green); }
+.card-value.r { color: var(--red); }
+.card-value.a { color: var(--accent); }
+.card-sub   { font-size: .7rem; color: var(--muted); margin-top: 4px; }
+
+/* ── BOX / TABLE ── */
+.box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.box-head {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 700;
+  font-size: .85rem;
+  background: var(--surface);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+th {
+  background: var(--surface2);
+  color: var(--muted);
+  padding: 8px 11px;
+  text-align: right;
+  font-weight: 600;
+  font-size: .73rem;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+th.lft, td.lft { text-align: left; }
+td {
+  padding: 8px 11px;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+td.lft { font-family: var(--font); font-weight: 500; white-space: normal; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface); }
+tr.tot td {
+  background: #fef3e2;
+  font-weight: 700;
+  border-top: 1px solid var(--border);
+  border-bottom: none;
+}
+tr.tot td.lft { font-family: var(--font); }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 20px;
+  font-size: .7rem;
+  font-weight: 600;
+  font-family: var(--mono);
+}
+.bu { background: #dcfce7; color: var(--green); }
+.bd { background: #fee2e2; color: var(--red); }
+.bn { background: var(--surface2); color: var(--muted); }
+.ba { background: #fff7ed; color: var(--accent); }
+
+/* ── MINI BAR ── */
+.bar-w { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
+.bar-bg { width: 80px; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; flex-shrink: 0; }
+.b68 { height: 100%; background: var(--c68); border-radius: 3px; }
+.b69 { height: 100%; background: var(--c69); border-radius: 3px; }
+.bar-label { font-family: var(--mono); font-size: .72rem; min-width: 38px; text-align: right; }
+
+/* ── COLORS ── */
+.up  { color: var(--green); }
+.dn  { color: var(--red); }
+.neu { color: var(--muted); }
+.acc { color: var(--accent); }
+
+/* ── PRODUCT GROUP HEADER ── */
+.grp-head {
+  background: #111827;
+  color: #fff;
+  padding: 9px 14px;
+  font-weight: 700;
+  font-size: .83rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── LEGEND ── */
+.legend { display: flex; gap: 16px; font-size: .75rem; color: var(--muted); margin-bottom: 10px; align-items: center; }
+.leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+@media(max-width:640px){
+  td,th { padding: 6px 8px; font-size: .73rem; }
+  .bar-bg { width: 50px; }
+  .page { padding: 16px 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="nav-brand">📊 สรุปกำไรขาย</div>
+  <div class="nav-tabs">
+    <div class="nav-tab active" onclick="go(0)">หน้า 1 · ภาพรวม กรุงเทพ</div>
+    <div class="nav-tab" onclick="go(1)">หน้า 2 · ภาพรวม พัทยา</div>
+    <div class="nav-tab" onclick="go(2)">หน้า 3 · รายสินค้า กรุงเทพ</div>
+    <div class="nav-tab" onclick="go(3)">หน้า 4 · รายสินค้า พัทยา</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 1 · ภาพรวม กรุงเทพ
+══════════════════════════════════════════ -->
+<div class="page active" id="p0">
+  <div class="page-title">ภาพรวมกำไร — กรุงเทพ</div>
+  <div class="page-sub">เปรียบเทียบกำไรรวมรายกลุ่มสินค้า ปี 2568 vs 2569 (ม.ค.–พ.ค.) · หน่วย: บาท</div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-label">กำไรรวม 2568 (5 เดือน)</div>
+      <div class="card-value">31,682,387</div>
+      <div class="card-sub">ม.ค.–พ.ค. 2568</div>
+    </div>
+    <div class="card">
+      <div class="card-label">กำไรรวม 2569 (5 เดือน)</div>
+      <div class="card-value g">35,665,653</div>
+      <div class="card-sub">ม.ค.–พ.ค. 2569</div>
+    </div>
+    <div class="card">
+      <div class="card-label">เพิ่มขึ้น (บาท)</div>
+      <div class="card-value g">+3,983,266</div>
+      <div class="card-sub">YoY เปรียบเทียบ</div>
+    </div>
+    <div class="card">
+      <div class="card-label">เพิ่มขึ้น (%)</div>
+      <div class="card-value a">+12.6%</div>
+      <div class="card-sub">Year-over-Year</div>
+    </div>
+    <div class="card">
+      <div class="card-label">กลุ่มที่โตสูงสุด</div>
+      <div class="card-value a" style="font-family:var(--font);font-size:1rem">ผนังซีลาย</div>
+      <div class="card-sub">+31.9% YoY</div>
+    </div>
+    <div class="card">
+      <div class="card-label">กลุ่มที่ลดมากสุด</div>
+      <div class="card-value r" style="font-family:var(--font);font-size:1rem">ไม้เบญ</div>
+      <div class="card-sub">-27.7% YoY</div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div style="display:flex;align-items:center;gap:5px"><div class="leg-dot" style="background:var(--c68)"></div>ปี 2568</div>
+    <div style="display:flex;align-items:center;gap:5px"><div class="leg-dot" style="background:var(--c69)"></div>ปี 2569</div>
+  </div>
+
+  <div class="box">
+    <div class="box-head">🏙️ เปรียบเทียบกำไรรายกลุ่ม พร้อมสัดส่วน (เต็ม 100%)</div>
+    <table>
+      <thead>
+        <tr>
+          <th class="lft">กลุ่มสินค้า</th>
+          <th>กำไร 2568</th>
+          <th>สัดส่วน 2568</th>
+          <th>กำไร 2569</th>
+          <th>สัดส่วน 2569</th>
+          <th>±บาท</th>
+          <th>±%</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="lft">เหล็กเส้น</td>
+          <td>1,671,326</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:42%"></div></div><span class="bar-label">5.3%</span></div></td>
+          <td>1,944,622</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:44%"></div></div><span class="bar-label">5.5%</span></div></td>
+          <td class="up">+273,296</td>
+          <td><span class="badge bu">+16.3%</span></td>
+        </tr>
+        <tr>
+          <td class="lft">จระเข้</td>
+          <td>806,463</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:20%"></div></div><span class="bar-label">2.5%</span></div></td>
+          <td>895,069</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:20%"></div></div><span class="bar-label">2.5%</span></div></td>
+          <td class="up">+88,606</td>
+          <td><span class="badge bu">+11.0%</span></td>
+        </tr>
+        <tr>
+          <td class="lft">เหล็กรูป</td>
+          <td>965,825</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:24%"></div></div><span class="bar-label">3.0%</span></div></td>
+          <td>890,677</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:20%"></div></div><span class="bar-label">2.5%</span></div></td>
+          <td class="dn">-75,148</td>
+          <td><span class="badge bd">-7.8%</span></td>
+        </tr>
+        <tr>
+          <td class="lft">ไม้ยูคา</td>
+          <td>193,781</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:5%"></div></div><span class="bar-label">0.6%</span></div></td>
+          <td>192,343</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:4%"></div></div><span class="bar-label">0.5%</span></div></td>
+          <td class="dn">-1,438</td>
+          <td><span class="badge bd">-0.7%</span></td>
+        </tr>
+        <tr>
+          <td class="lft">ไม้อัดยาง</td>
+          <td>611,838</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:15%"></div></div><span class="bar-label">1.9%</span></div></td>
+          <td>743,514</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:17%"></div></div><span class="bar-label">2.1%</span></div></td>
+          <td class="up">+131,676</td>
+          <td><span class="badge bu">+21.5%</span></td>
+        </tr>
+        <tr>
+          <td class="lft">ซิก้า</td>
+          <td>199,972</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:5%"></div></div><span class="bar-label">0.6%</span></div></td>
+          <td>159,578</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:4%"></div></div><span class="bar-label">0.4%</span></div></td>
+          <td class="dn">-40,394</td>
+          <td><span class="badge bd">-20.2%</span></td>
+        </tr>
+        <tr>
+          <td class="lft">ควิกโค้ท</td>
+          <td>961,820</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:24%"></div></div><span class="bar-label">3.0%</span></div></td>
+          <td>1,078,958</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:24%"></div></div><span class="bar-label">3.0%</span></div></td>
+          <td class="up">+117,138</td>
+          <td><span class="badge bu">+12.2%</span></td>
+        </tr>
+        <tr>
+          <td class="lft">วีว่าบอร์ด</td>
+          <td>135,302</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:3%"></div></div><span class="bar-label">0.4%</span></div></td>
+          <td>143,986</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:3%"></div></div><span class="bar-label">0.4%</span></div></td>
+          <td class="up">+8,684</td>
+          <td><span class="badge bu">+6.4%</span></td>
+        </tr>
+        <tr>
+          <td class="lft">ยิปซั่มสมาร์ทบอร์ด</td>
+          <td>671,610</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:17%"></div></div><span class="bar-label">2.1%</span></div></td>
+          <td>717,327</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:16%"></div></div><span class="bar-label">2.0%</span></div></td>
+          <td class="up">+45,717</td>
+          <td><span class="badge bu">+6.8%</span></td>
+        </tr>
+        <tr>
+          <td class="lft">ไวเมช</td>
+          <td>476,234</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:12%"></div></div><span class="bar-label">1.5%</span></div></td>
+          <td>461,452</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:10%"></div></div><span class="bar-label">1.3%</span></div></td>
+          <td class="dn">-14,782</td>
+          <td><span class="badge bd">-3.1%</span></td>
+        </tr>
+        <tr>
+          <td class="lft">ผนังซีลาย</td>
+          <td>387,262</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:10%"></div></div><span class="bar-label">1.2%</span></div></td>
+          <td>510,888</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:12%"></div></div><span class="bar-label">1.4%</span></div></td>
+          <td class="up">+123,626</td>
+          <td><span class="badge bu">+31.9%</span></td>
+        </tr>
+        <tr>
+          <td class="lft">ไม้เบญ</td>
+          <td>495,121</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:12%"></div></div><span class="bar-label">1.6%</span></div></td>
+          <td>358,096</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:8%"></div></div><span class="bar-label">1.0%</span></div></td>
+          <td class="dn">-137,025</td>
+          <td><span class="badge bd">-27.7%</span></td>
+        </tr>
+        <tr>
+          <td class="lft">ปูนเสือ</td>
+          <td>2,313,721</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:58%"></div></div><span class="bar-label">7.3%</span></div></td>
+          <td>2,781,915</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:62%"></div></div><span class="bar-label">7.8%</span></div></td>
+          <td class="up">+468,194</td>
+          <td><span class="badge bu">+20.2%</span></td>
+        </tr>
+        <tr>
+          <td class="lft">ทีพีไอ</td>
+          <td>4,750,457</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:100%"></div></div><span class="bar-label">15.0%</span></div></td>
+          <td>5,481,579</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:100%"></div></div><span class="bar-label">15.4%</span></div></td>
+          <td class="up">+731,122</td>
+          <td><span class="badge bu">+15.4%</span></td>
+        </tr>
+        <tr>
+          <td class="lft">หินทราย</td>
+          <td>12,557,973</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:100%"></div></div><span class="bar-label">39.6%</span></div></td>
+          <td>13,507,214</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:100%"></div></div><span class="bar-label">37.9%</span></div></td>
+          <td class="up">+949,241</td>
+          <td><span class="badge bu">+7.6%</span></td>
+        </tr>
+        <tr>
+          <td class="lft">คอนกรีต</td>
+          <td>4,800,683</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:100%"></div></div><span class="bar-label">15.2%</span></div></td>
+          <td>4,598,435</td>
+          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:93%"></div></div><span class="bar-label">12.9%</span></div></td>
+          <td class="dn">-202,248</td>
+          <td><span class="badge bd">-4.2%</span></td>
+        </tr>
+        <tr class="tot">
+          <td class="lft">รวมทุกกลุ่ม</td>
+          <td>31,682,387</td>
+          <td><span class="bar-label" style="font-family:var(--mono)">100.0%</span></td>
+          <td>35,665,653</td>
+          <td><span class="bar-label" style="font-family:var(--mono)">100.0%</span></td>
+          <td class="up">+3,983,266</td>
+          <td><span class="badge bu">+12.6%</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PAGE 2 · ภาพรวม พัทยา
+══════════════════════════════════════════ -->
+<div class="page" id="p1">
+  <div class="page-title">ภาพรวมกำไร — พัทยา</div>
+  <div class="page-sub">เปรียบเทียบกำไรรวมรายกลุ่มสินค้า ปี 2568 vs 2569 (ม.ค.–พ.ค.) · หน่วย: บาท</div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="card-label">กำไรรวม 2568 (5 เดือน)</div>
+      <div class="card-value">1,133,818</div>
+      <div class="card-sub">ม.ค.–พ.ค. 2568</div>
+    </div>
+    <div class="card">
+      <div class="card-label">กำไรรวม 2569 (5 เดือน)</div>
+      <div class="card-value g">1,268,952</div>
+      <div class="card-sub">ม.ค.–พ.ค. 2569</div>
+    </div>
+    <div class="card">
+      <div class="card-label">เพิ่มขึ้น (บาท)</div>
+      <div class="card-value g">+135,134</div>
+      <div class="card-sub">YoY เปรียบเทียบ</div>
+    </div>
+    <div class="card">
+      <div class="card-label">เพิ่มขึ้น (%)</div>
+      <div class="card-value a">+11.9%</div>
+      <div class="card-sub">Year-over-Year</div>
+    </div>
+    <div class="card">
+      <div class="card-label">กลุ่มที่โตสูงสุด</div>
+      <div class="card-value a" style="font-family:var(--font);font-size:1rem">จระเข้</div>
+      <div class="card-sub">มีข้อมูลเพิ่ม 2569</div>
+    </div>
+    <div class="card">
+      <div class="card-label">สินค้าหลัก</div>
+      <div class="card-value a" style="font-family:var(--font);font-size:1rem">หินทราย</div>
+      <div class="card-sub">สัดส่วนสูงสุด</div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div style="display:flex;align-items:center;gap:5px"><div class="leg-dot" style="background:var(--c68)"></div>ปี 2568</div>
+    <div style="display:flex;align-items:center;gap:5px"><div class="leg-dot" style="background:var(--c69)"></div>ปี 2569</div>
+  </div>
+
+  
