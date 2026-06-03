@@ -17,13 +17,15 @@
 body { font-family:var(--font); background:var(--surface); color:var(--text); font-size:14px; min-height:100vh }
 
 /* NAV */
-.nav { background:#111827; display:flex; align-items:center; position:sticky; top:0; z-index:9999; box-shadow:0 2px 12px rgba(0,0,0,.4); flex-wrap:wrap }
-.nav-brand { color:var(--accent); font-size:.9rem; font-weight:700; padding:13px 18px; border-right:1px solid rgba(255,255,255,.1); white-space:nowrap; flex-shrink:0 }
-.nav-tabs { display:flex; overflow-x:auto; flex:1 }
-.nav-tab { color:rgba(255,255,255,.55); padding:13px 16px; cursor:pointer; border-bottom:3px solid transparent; white-space:nowrap; font-size:.8rem; font-weight:500; transition:all .15s; user-select:none }
+.nav { background:#111827; display:flex; flex-direction:column; position:sticky; top:0; z-index:9999; box-shadow:0 2px 12px rgba(0,0,0,.4) }
+.nav-row1 { display:flex; align-items:center; width:100%; border-bottom:1px solid rgba(255,255,255,.08) }
+.nav-brand { color:var(--accent); font-size:.9rem; font-weight:700; padding:12px 18px; border-right:1px solid rgba(255,255,255,.1); white-space:nowrap; flex-shrink:0 }
+.nav-row2 { display:flex; width:100% }
+.nav-tabs { display:flex; width:100% }
+.nav-tab { color:rgba(255,255,255,.6); padding:11px 0; cursor:pointer; border-bottom:3px solid transparent; white-space:nowrap; font-size:.82rem; font-weight:500; transition:all .15s; user-select:none; flex:1; text-align:center }
 .nav-tab:hover { color:#fff; background:rgba(255,255,255,.07) }
-.nav-tab.active { color:#fff; border-bottom-color:var(--accent) }
-.nav-right { padding:0 14px; display:flex; gap:8px; align-items:center; flex-shrink:0 }
+.nav-tab.active { color:#fff; border-bottom-color:var(--accent); background:rgba(255,255,255,.04) }
+.nav-right { padding:0 14px; display:flex; gap:8px; align-items:center; margin-left:auto; flex-shrink:0 }
 .btn-sheet { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); color:rgba(255,255,255,.8); font-family:var(--font); font-size:.75rem; padding:6px 12px; border-radius:6px; cursor:pointer; text-decoration:none; transition:all .15s; white-space:nowrap }
 .btn-sheet:hover { background:rgba(255,255,255,.16); color:#fff }
 .btn-refresh { background:rgba(224,123,30,.15); border:1px solid rgba(224,123,30,.3); color:var(--accent); font-family:var(--font); font-size:.75rem; padding:6px 10px; border-radius:6px; cursor:pointer; transition:all .15s }
@@ -138,16 +140,20 @@ tr.yr-head69 td { background:#eff6ff; font-weight:700; color:var(--c69); font-si
 <body>
 
 <div class="nav">
-  <div class="nav-brand">📊 สรุปกำไรขาย</div>
-  <div class="nav-tabs">
-    <div class="nav-tab active" id="tab0" onclick="go(0)">หน้า 1 · ภาพรวม กรุงเทพ</div>
-    <div class="nav-tab" id="tab1" onclick="go(1)">หน้า 2 · ภาพรวม พัทยา</div>
-    <div class="nav-tab" id="tab2" onclick="go(2)">หน้า 3 · รายสินค้า กรุงเทพ</div>
-    <div class="nav-tab" id="tab3" onclick="go(3)">หน้า 4 · รายสินค้า พัทยา</div>
+  <div class="nav-row1">
+    <div class="nav-brand">📊 สรุปกำไรขาย</div>
+    <div class="nav-right">
+      <button class="btn-refresh" onclick="loadData(true)" id="btn-refresh">↺ รีเฟรช</button>
+      <a class="btn-sheet" href="https://docs.google.com/spreadsheets/d/15b_m7yDpWC0lUnt-_4sfAoayg3ysvDiE62WagXEKDiU/edit" target="_blank">📋 DATA</a>
+    </div>
   </div>
-  <div class="nav-right">
-    <button class="btn-refresh" onclick="loadData(true)" id="btn-refresh">↺ รีเฟรช</button>
-    <a class="btn-sheet" href="https://docs.google.com/spreadsheets/d/15b_m7yDpWC0lUnt-_4sfAoayg3ysvDiE62WagXEKDiU/edit" target="_blank">📋 DATA</a>
+  <div class="nav-row2">
+    <div class="nav-tabs">
+      <div class="nav-tab active" id="tab0" onclick="go(0)">หน้า 1 · กรุงเทพ</div>
+      <div class="nav-tab" id="tab1" onclick="go(1)">หน้า 2 · พัทยา</div>
+      <div class="nav-tab" id="tab2" onclick="go(2)">หน้า 3 · สินค้า กทม.</div>
+      <div class="nav-tab" id="tab3" onclick="go(3)">หน้า 4 · สินค้า พัทยา</div>
+    </div>
   </div>
 </div>
 
