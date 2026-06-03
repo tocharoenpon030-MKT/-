@@ -244,20 +244,42 @@ function barWidth(val, max) {
 
 // ══════════════════════════════════════════════
 //  PARSE SUMMARY SHEET (กรุงเทพ / พัทยา)
-//  โครงสร้าง: col pairs = (2568m1,2569m1, 2568m2,2569m2 ...)
-//  กำไรรวม rows 2-17, สัดส่วนขายออก rows 23-38
+//  โครงสร้าง header row: col0=สรุป, col1=รายการ,
+//  col2=เดือน1/2568, col3=เดือน1/2569, col4=เดือน2/2568 ...
+//  กำไรรวม rows 2-17 (row[0]==='กำไรรวม')
+//  สัดส่วนขายออก rows 23-38 (row[0]==='สัดส่วนขายออก')
 // ══════════════════════════════════════════════
 function parseSummarySheet(rows) {
-  // col indices (0-based):
-  // เดือน1: 2568=col2, 2569=col3 ... เดือน12: 2568=col24, 2569=col25
-  const cols68 = [2,4,6,8,10,12,14,16,18,20,22,24];
-  const cols69 = [3,5,7,9,11,13,15,17,19,21,23,25];
+  // ── หา column mapping จาก header row ──
+  // หา header row (row ที่มี col1 === 'รายการ')
+  let headerRow = null;
+  for (const row of rows) {
+    if (row[1] === 'รายการ') { headerRow = row; break; }
+  }
+
+  // สร้าง map: เดือน1-12 → col index ของ 2568 และ 2569
+  // ใช้ positional เป็นค่าเริ่มต้น (คู่ col 2568/2569 สลับจาก col 2)
+  // หมายเหตุ: รองรับกรณี header พิมพ์ผิด (เช่น เดือน10/2569 แทน เดือน10/2568)
+  const cols68 = [], cols69 = [];
+  for (let m = 0; m < 12; m++) {
+    cols68.push(2 + m*2);
+    cols69.push(3 + m*2);
+  }
+  if (headerRow) {
+    for (let m = 1; m <= 12; m++) {
+      for (let i = 2; i < headerRow.length; i++) {
+        const h = String(headerRow[i]||'').replace(/\s/g,'');
+        if (h === `เดือน${m}/2568`) cols68[m-1] = i;
+        if (h === `เดือน${m}/2569`) cols69[m-1] = i;
+      }
+    }
+  }
 
   const products = [];
   for (const row of rows) {
     if (row[0]==='กำไรรวม' && row[1] && row[1]!=='รวมทุกกลุ่ม') {
-      const v68 = cols68.map(c=>n(row[c]));
-      const v69 = cols69.map(c=>n(row[c]));
+      const v68 = cols68.map(c=>c>=0?n(row[c]):null);
+      const v69 = cols69.map(c=>c>=0?n(row[c]):null);
       products.push({ name:row[1], v68, v69 });
     }
   }
@@ -265,9 +287,8 @@ function parseSummarySheet(rows) {
   const ratios = [];
   for (const row of rows) {
     if (row[0]==='สัดส่วนขายออก' && row[1] && row[1]!=='รวมทุกกลุ่ม') {
-      // เดือน 1-12 สัดส่วน
-      const r68 = cols68.map(c=>n(row[c]));
-      const r69 = cols69.map(c=>n(row[c]));
+      const r68 = cols68.map(c=>c>=0?n(row[c]):null);
+      const r69 = cols69.map(c=>c>=0?n(row[c]):null);
       ratios.push({ name:row[1], r68, r69 });
     }
   }
