@@ -283,7 +283,8 @@ function parseSummarySheet(rows) {
     if (row[0]==='สัดส่วนขายออก' && row[1] && row[1]!=='รวมทุกกลุ่ม') {
       const r68=cols68.map(c=>n(row[c]));
       const r69=cols69.map(c=>n(row[c]));
-      ratios.push({name:row[1],r68,r69});
+      ratios.push({name:row[1],r68,r69,
+        avg68:0, avg69:0});
     }
   }
 
@@ -442,69 +443,74 @@ function renderOverview(data, contentId, subId, city) {
     </tbody>
   </table></div>`;
 
-  // ── TABLE 3: กลุ่ม × เดือน 1-12 (cross table) ──
-  // แถวกลุ่ม col = เดือน, มี 2 sub-row ต่อกลุ่ม (2568 / 2569)
-  let thMonths='<th class="L">กลุ่มสินค้า</th><th>ปี</th>';
-  for (let m=0;m<12;m++) thMonths+=`<th>${MONTHS_TH[m]}</th>`;
-  thMonths+='<th>รวม</th>';
+  // ── TABLE 3: กลุ่ม × เดือน (paired columns: 2568|2569 ต่อเดือน) ──
+  // header row 1: กลุ่ม + เดือน (colspan 2) × 12 + รวม (colspan 2)
+  let thRow1 = `<th class="L tbl-cross" style="min-width:90px" rowspan="2">กลุ่มสินค้า</th>`;
+  for (let m=0;m<12;m++) thRow1+=`<th colspan="2" style="text-align:center;background:var(--surface2);border-bottom:1px solid var(--border)">${MONTHS_TH[m]}</th>`;
+  thRow1+=`<th colspan="2" style="text-align:center;background:var(--surface2);border-bottom:1px solid var(--border)">รวม</th>`;
+
+  // header row 2: 2568 | 2569 ต่อทุกเดือน + รวม
+  let thRow2='';
+  for (let m=0;m<13;m++) {
+    thRow2+=`<th style="color:var(--c68);background:#fff7ed;font-size:.62rem;border-top:2px solid var(--c68)">2568<br><span style="font-weight:400;font-size:.58rem;color:#92400e">กำไร / สัดส่วน</span></th>`;
+    thRow2+=`<th style="color:var(--c69);background:#eff6ff;font-size:.62rem;border-top:2px solid var(--c69)">2569<br><span style="font-weight:400;font-size:.58rem;color:#1e40af">กำไร / สัดส่วน</span></th>`;
+  }
+
+  // helper: cell with ratio below
+  function cellPair(val, ratio, yr) {
+    const col = yr===68?'var(--c68)':'var(--c69)';
+    const bg  = yr===68?'#fff7ed':'#eff6ff';
+    const rc  = yr===68?'#92400e':'#1e40af';
+    if (val===null||val===undefined||val==='') {
+      return `<td style="background:${bg};color:var(--muted2);text-align:center">—</td>`;
+    }
+    const ratioStr = (ratio!==null&&ratio!==undefined) ? `<br><span style="font-size:.6rem;color:${rc}">${ratio.toFixed(2)}%</span>` : '';
+    return `<td style="background:${bg};color:${col};text-align:right;font-family:var(--mono);font-size:.72rem">${fmt(val)}${ratioStr}</td>`;
+  }
 
   let t3rows='';
   for (const p of products) {
-    // แถว 2568
-    let cells68='';
+    const r = ratios.find(x=>x.name===p.name)||{r68:Array(12).fill(null),r69:Array(12).fill(null)};
+    let cells='';
     for (let m=0;m<12;m++) {
-      const v=safe(p.v68[m]);
-      cells68+=`<td class="yr68">${v?fmt(v):'<span class="blank">—</span>'}</td>`;
+      const v68 = p.v68[m]||null;
+      const v69 = (m<nM) ? (p.v69[m]||null) : null;
+      const ra68 = r.r68[m];
+      const ra69 = (m<nM) ? r.r69[m] : null;
+      cells += cellPair(v68, ra68, 68) + cellPair(v69, ra69, 69);
     }
-    // แถว 2569
-    let cells69='';
-    for (let m=0;m<12;m++) {
-      const v=safe(p.v69[m]);
-      const has = m < nM;
-      cells69+=has?`<td class="yr69">${v?fmt(v):'<span class="blank">—</span>'}</td>`
-                  :`<td class="blank">—</td>`;
-    }
-    t3rows+=`
-      <tr>
-        <td class="grp" rowspan="2">${p.name}</td>
-        <td style="color:var(--c68);font-weight:600;font-size:.65rem">2568</td>
-        ${cells68}
-        <td class="yr68" style="font-weight:700">${fmt(p.sum68_full)}</td>
-      </tr>
-      <tr>
-        <td style="color:var(--c69);font-weight:600;font-size:.65rem">2569</td>
-        ${cells69}
-        <td class="yr69" style="font-weight:700">${fmt(p.sum69_nm)}</td>
-      </tr>`;
+    // รวม 2568 (เต็มปี) + รวม 2569 (nM เดือน) พร้อม avg ratio
+    const avgR68 = r.r68.filter(v=>v!==null).reduce((a,b)=>a+b,0) / (r.r68.filter(v=>v!==null).length||1);
+    const avgR69v = r.r69.slice(0,nM).filter(v=>v!==null&&v>0);
+    const avgR69 = avgR69v.length ? avgR69v.reduce((a,b)=>a+b,0)/avgR69v.length : null;
+    cells += cellPair(p.sum68_full, avgR68, 68) + cellPair(p.sum69_nm, avgR69, 69);
+    t3rows+=`<tr><td class="grp">${p.name}</td>${cells}</tr>`;
   }
+
   // total row
-  let tot68cells='', tot69cells='';
+  let totCells='';
   for (let m=0;m<12;m++) {
     const s68=products.reduce((s,p)=>s+safe(p.v68[m]),0);
-    const s69=products.reduce((s,p)=>s+safe(p.v69[m]),0);
-    tot68cells+=`<td style="font-weight:700">${fmt(s68)}</td>`;
-    tot69cells+=m<nM?`<td style="font-weight:700;color:var(--c69)">${fmt(s69)}</td>`:`<td class="blank">—</td>`;
+    const s69=(m<nM)?products.reduce((s,p)=>s+safe(p.v69[m]),0):null;
+    // ratio รวม: ดึงจาก ratios แถว รวมทุกกลุ่ม หรือ compute เอาไม่ได้ → ใส่ null
+    totCells += cellPair(s68||null, null, 68) + cellPair(s69, null, 69);
   }
-  t3rows+=`
-    <tr class="tot-row">
-      <td class="grp" style="font-family:var(--font);font-weight:700" rowspan="2">รวมทุกกลุ่ม</td>
-      <td style="color:var(--c68);font-weight:700;font-size:.65rem">2568</td>
-      ${tot68cells}<td style="font-weight:700">${fmt(total68_full)}</td>
-    </tr>
-    <tr class="tot-row">
-      <td style="color:var(--c69);font-weight:700;font-size:.65rem">2569</td>
-      ${tot69cells}<td style="font-weight:700;color:var(--c69)">${fmt(total69_nm)}</td>
-    </tr>`;
+  totCells += cellPair(total68_full, null, 68) + cellPair(total69_nm, null, 69);
+  t3rows+=`<tr class="tot-row"><td class="grp" style="font-family:var(--font);font-weight:700">รวมทุกกลุ่ม</td>${totCells}</tr>`;
 
   const tableCross=`
   <div class="sec-title">📅 กำไรรายกลุ่ม × รายเดือน (2568 เต็มปี · 2569 ม.ค.–${mEnd})</div>
   <div class="leg">
     <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c68)"></span>ปี 2568</div>
     <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c69)"></span>ปี 2569</div>
+    <span style="font-size:.72rem;color:var(--muted)">· ตัวเลขเล็กใต้กำไร = สัดส่วนขายออก (%) · รวม = เฉลี่ยสัดส่วนตลอดช่วง</span>
   </div>
   <div class="box" style="overflow-x:auto">
     <table class="tbl-cross">
-      <thead><tr>${thMonths}</tr></thead>
+      <thead>
+        <tr>${thRow1}</tr>
+        <tr>${thRow2}</tr>
+      </thead>
       <tbody>${t3rows}</tbody>
     </table>
   </div>`;
