@@ -613,23 +613,24 @@ function renderDetail(rows, contentId, city) {
         const md = m || {};
         const has68 = md.qty68 > 0;
         const has69 = md.qty69 > 0;
-        // แถวข้อมูล
+        const gpu68 = (md.price68!=null && md.cost68!=null) ? md.price68 - md.cost68 : null;
+        const gpu69 = (md.price69!=null && md.cost69!=null) ? md.price69 - md.cost69 : null;
         tbody += `<tr>
-          <td class="L">${grp}</td>
-          <td style="text-align:center">${MONTHS_TH[mon-1]}</td>
+          <td style="text-align:center;font-family:var(--font)">${MONTHS_TH[mon-1]}</td>
           <td class="L" style="font-size:.7rem;max-width:220px;white-space:normal">${item.desc}</td>
-          <td class="L" style="text-align:center">${item.unit}</td>
           <td>${md.cost68!=null?fmt2(md.cost68):'<span class="m-blank">—</span>'}</td>
           <td>${md.cost69!=null?fmt2(md.cost69):'<span class="m-blank">—</span>'}</td>
           <td>${md.price68!=null?fmt2(md.price68):'<span class="m-blank">—</span>'}</td>
           <td>${md.price69!=null?fmt2(md.price69):'<span class="m-blank">—</span>'}</td>
           <td><div class="cell-2row">
             <div class="row1">${has68?fmt(md.qty68):'<span class="m-blank">—</span>'}</div>
-            <div class="row2 profit">${has68?fmt(md.profit68):'<span class="m-blank"></span>'}</div>
+            <div class="row2" style="color:var(--green)">${gpu68!=null?fmt2(gpu68)+' /หน่วย':''}</div>
+            <div class="row2" style="color:#059669;font-weight:600">${has68?fmt(md.profit68):''}</div>
           </div></td>
           <td><div class="cell-2row">
             <div class="row1">${has69?fmt(md.qty69):'<span class="m-blank">—</span>'}</div>
-            <div class="row2 profit" style="color:var(--c69)">${has69?fmt(md.profit69):'<span class="m-blank"></span>'}</div>
+            <div class="row2" style="color:#60a5fa">${gpu69!=null?fmt2(gpu69)+' /หน่วย':''}</div>
+            <div class="row2" style="color:var(--c69);font-weight:600">${has69?fmt(md.profit69):''}</div>
           </div></td>
         </tr>`;
       }
@@ -640,16 +641,20 @@ function renderDetail(rows, contentId, city) {
       <div class="box-head">📦 ${grp} · ${city}</div>
       <table class="tbl-detail">
         <thead><tr>
-          <th class="L">กลุ่ม</th>
           <th class="L">เดือน</th>
           <th class="L">รายละเอียด</th>
-          <th class="L">หน่วย</th>
           <th>ต้นทุนเฉลี่ย<br>2568</th>
           <th>ต้นทุนเฉลี่ย<br>2569</th>
           <th>ราคาขายเฉลี่ย<br>2568</th>
           <th>ราคาขายเฉลี่ย<br>2569</th>
-          <th>จำนวนขาย 2568<br><span style="font-weight:400;color:var(--green)">กำไร 2568</span></th>
-          <th>จำนวนขาย 2569<br><span style="font-weight:400;color:var(--c69)">กำไร 2569</span></th>
+          <th>จำนวนขาย 2568<br>
+            <span style="font-weight:400;color:var(--green)">กำไร/หน่วย</span> ·
+            <span style="font-weight:600;color:#059669">กำไรรวม</span>
+          </th>
+          <th>จำนวนขาย 2569<br>
+            <span style="font-weight:400;color:#60a5fa">กำไร/หน่วย</span> ·
+            <span style="font-weight:600;color:var(--c69)">กำไรรวม</span>
+          </th>
         </tr></thead>
         <tbody>${tbody}</tbody>
       </table>
