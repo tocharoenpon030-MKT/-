@@ -3,487 +3,555 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>สรุปกำไรขาย</title>
-<link rel="preconnect" href="[fonts.googleapis.com](https://fonts.googleapis.com)">
-<link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap)" rel="stylesheet">
+<title>สรุปกำไรขาย · Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:      #ffffff;
-  --surface: #f8f9fa;
-  --surface2:#f0f1f3;
-  --border:  #e2e5e9;
-  --accent:  #e07b1e;
-  --accent2: #2563eb;
-  --green:   #16a34a;
-  --red:     #dc2626;
-  --yellow:  #d97706;
-  --text:    #111827;
-  --muted:   #6b7280;
-  --rebate:  #16a34a;
-  --font:    'Sarabun', sans-serif;
-  --mono:    'IBM Plex Mono', monospace;
-  --radius:  10px;
-  --c65:     #6366f1;
-  --c66:     #0ea5e9;
-  --c67:     #10b981;
-  --c68:     #e07b1e;
-  --c69:     #d97706;
+  --bg:#ffffff; --surface:#f8f9fa; --surface2:#f0f2f4; --border:#e2e6ea;
+  --accent:#e07b1e; --green:#16a34a; --red:#dc2626; --yellow:#d97706;
+  --text:#111827; --muted:#6b7280; --muted2:#9ca3af;
+  --font:'Sarabun',sans-serif; --mono:'IBM Plex Mono',monospace;
+  --r:10px; --c68:#e07b1e; --c69:#2563eb;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: var(--font);
-  background: var(--bg);
-  color: var(--text);
-  font-size: 14px;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+body { font-family:var(--font); background:var(--surface); color:var(--text); font-size:14px; min-height:100vh }
 
 /* ── NAV ── */
-.nav {
-  background: #111827;
-  display: flex;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 200;
-  box-shadow: 0 1px 0 rgba(255,255,255,.08);
-  flex-wrap: wrap;
-}
-.nav-brand {
-  color: var(--accent);
-  font-size: .95rem;
-  font-weight: 700;
-  padding: 13px 20px;
-  border-right: 1px solid rgba(255,255,255,.1);
-  white-space: nowrap;
-  letter-spacing: .3px;
-}
-.nav-tabs { display: flex; overflow-x: auto; }
-.nav-tab {
-  color: rgba(255,255,255,.55);
-  padding: 13px 18px;
-  cursor: pointer;
-  border-bottom: 3px solid transparent;
-  white-space: nowrap;
-  font-size: .82rem;
-  font-weight: 500;
-  transition: color .15s, border-color .15s, background .15s;
-  letter-spacing: .2px;
-}
-.nav-tab:hover { color: rgba(255,255,255,.9); background: rgba(255,255,255,.05); }
-.nav-tab.active { color: #fff; border-bottom-color: var(--accent); }
+.nav { background:#111827; display:flex; align-items:center; position:sticky; top:0; z-index:9999; box-shadow:0 2px 12px rgba(0,0,0,.4); flex-wrap:wrap }
+.nav-brand { color:var(--accent); font-size:.9rem; font-weight:700; padding:13px 18px; border-right:1px solid rgba(255,255,255,.1); white-space:nowrap; flex-shrink:0 }
+.nav-tabs { display:flex; overflow-x:auto; flex:1 }
+.nav-tab { color:rgba(255,255,255,.55); padding:13px 16px; cursor:pointer; border-bottom:3px solid transparent; white-space:nowrap; font-size:.8rem; font-weight:500; transition:all .15s; user-select:none }
+.nav-tab:hover { color:#fff; background:rgba(255,255,255,.07) }
+.nav-tab.active { color:#fff; border-bottom-color:var(--accent) }
+.nav-right { padding:0 14px; display:flex; gap:8px; align-items:center; flex-shrink:0 }
+.btn-sheet { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); color:rgba(255,255,255,.8); font-family:var(--font); font-size:.75rem; padding:6px 12px; border-radius:6px; cursor:pointer; text-decoration:none; transition:all .15s; white-space:nowrap }
+.btn-sheet:hover { background:rgba(255,255,255,.16); color:#fff }
+.btn-refresh { background:rgba(224,123,30,.15); border:1px solid rgba(224,123,30,.3); color:var(--accent); font-family:var(--font); font-size:.75rem; padding:6px 10px; border-radius:6px; cursor:pointer; transition:all .15s }
+.btn-refresh:hover { background:rgba(224,123,30,.25) }
 
-/* ── PAGES ── */
-.page { display: none; padding: 24px 20px; max-width: 1280px; margin: 0 auto; }
-.page.active { display: block; }
+/* ── PAGE ── */
+.page { display:none; padding:22px 18px; max-width:1260px; margin:0 auto }
+.page.active { display:block }
+.page-title { font-size:1.2rem; font-weight:700; margin-bottom:3px }
+.page-sub { font-size:.78rem; color:var(--muted); margin-bottom:16px }
+.sec-title { font-size:.84rem; font-weight:700; margin:20px 0 10px; padding-left:10px; border-left:3px solid var(--accent); display:flex; align-items:center; gap:8px }
 
-/* ── TYPOGRAPHY ── */
-.page-title { font-size: 1.25rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
-.page-sub   { font-size: .82rem; color: var(--muted); margin-bottom: 20px; }
-.sec-title  {
-  font-size: .88rem; font-weight: 700; color: var(--text);
-  margin: 22px 0 10px; padding-left: 10px;
-  border-left: 3px solid var(--accent);
-  letter-spacing: .2px;
-}
+/* ── LOADING ── */
+.loading-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:80px 20px; color:var(--muted) }
+.spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite }
+@keyframes spin { to { transform:rotate(360deg) } }
+.err-box { background:#fef2f2; border:1px solid #fecaca; border-radius:var(--r); padding:16px 20px; color:#b91c1c; font-size:.83rem; line-height:1.6 }
 
-/* ── STAT CARDS ── */
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 12px;
-  margin-bottom: 20px;
-}
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
-}
-.card-label { font-size: .73rem; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
-.card-value { font-family: var(--mono); font-size: 1.25rem; font-weight: 500; color: var(--text); }
-.card-value.g { color: var(--green); }
-.card-value.r { color: var(--red); }
-.card-value.a { color: var(--accent); }
-.card-sub   { font-size: .7rem; color: var(--muted); margin-top: 4px; }
+/* ── CARDS ── */
+.cards { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:18px }
+.card { background:var(--bg); border:1px solid var(--border); border-radius:var(--r); padding:14px 16px }
+.card-label { font-size:.68rem; color:var(--muted); margin-bottom:6px; font-weight:600; text-transform:uppercase; letter-spacing:.03em; line-height:1.4 }
+.card-value { font-family:var(--mono); font-size:1.05rem; font-weight:600; line-height:1.2 }
+.card-sub { font-size:.67rem; color:var(--muted2); margin-top:4px }
+.c-green { color:var(--green) } .c-red { color:var(--red) } .c-acc { color:var(--accent) }
+.c-68 { color:var(--c68) } .c-69 { color:var(--c69) }
 
 /* ── BOX / TABLE ── */
-.box {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  margin-bottom: 20px;
-}
-.box-head {
-  padding: 11px 16px;
-  border-bottom: 1px solid var(--border);
-  font-weight: 700;
-  font-size: .85rem;
-  background: var(--surface);
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
-th {
-  background: var(--surface2);
-  color: var(--muted);
-  padding: 8px 11px;
-  text-align: right;
-  font-weight: 600;
-  font-size: .73rem;
-  text-transform: uppercase;
-  letter-spacing: .4px;
-  border-bottom: 1px solid var(--border);
-  white-space: nowrap;
-}
-th.lft, td.lft { text-align: left; }
-td {
-  padding: 8px 11px;
-  border-bottom: 1px solid var(--border);
-  text-align: right;
-  font-family: var(--mono);
-  white-space: nowrap;
-}
-td.lft { font-family: var(--font); font-weight: 500; white-space: normal; }
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: var(--surface); }
-tr.tot td {
-  background: #fef3e2;
-  font-weight: 700;
-  border-top: 1px solid var(--border);
-  border-bottom: none;
-}
-tr.tot td.lft { font-family: var(--font); }
+.box { background:var(--bg); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; margin-bottom:18px }
+.box-head { padding:10px 16px; border-bottom:1px solid var(--border); font-weight:700; font-size:.82rem; background:var(--surface); display:flex; align-items:center; gap:8px }
+table { width:100%; border-collapse:collapse; font-size:.78rem }
+th { background:var(--surface2); color:var(--muted); padding:8px 11px; text-align:right; font-weight:600; font-size:.67rem; text-transform:uppercase; letter-spacing:.04em; border-bottom:1px solid var(--border); white-space:nowrap }
+th.L { text-align:left }
+td { padding:7px 11px; border-bottom:1px solid var(--border); text-align:right; font-family:var(--mono); white-space:nowrap }
+td.L { font-family:var(--font); font-weight:500; text-align:left; white-space:normal }
+tr:last-child td { border-bottom:none }
+tr:hover td { background:rgba(0,0,0,.018) }
+tr.tot td { background:#fff7ed; font-weight:700; border-top:2px solid var(--accent); border-bottom:none }
+tr.tot td.L { font-family:var(--font) }
 
 /* ── BADGES ── */
-.badge {
-  display: inline-block;
-  padding: 2px 7px;
-  border-radius: 20px;
-  font-size: .7rem;
-  font-weight: 600;
-  font-family: var(--mono);
-}
-.bu { background: #dcfce7; color: var(--green); }
-.bd { background: #fee2e2; color: var(--red); }
-.bn { background: var(--surface2); color: var(--muted); }
-.ba { background: #fff7ed; color: var(--accent); }
+.badge { display:inline-block; padding:2px 8px; border-radius:20px; font-size:.67rem; font-weight:600; font-family:var(--mono) }
+.bu { background:#dcfce7; color:var(--green) }
+.bd { background:#fee2e2; color:var(--red) }
+.bn { background:var(--surface2); color:var(--muted) }
 
-/* ── MINI BAR ── */
-.bar-w { display: flex; align-items: center; gap: 6px; justify-content: flex-end; }
-.bar-bg { width: 80px; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; flex-shrink: 0; }
-.b68 { height: 100%; background: var(--c68); border-radius: 3px; }
-.b69 { height: 100%; background: var(--c69); border-radius: 3px; }
-.bar-label { font-family: var(--mono); font-size: .72rem; min-width: 38px; text-align: right; }
-
-/* ── COLORS ── */
-.up  { color: var(--green); }
-.dn  { color: var(--red); }
-.neu { color: var(--muted); }
-.acc { color: var(--accent); }
-
-/* ── PRODUCT GROUP HEADER ── */
-.grp-head {
-  background: #111827;
-  color: #fff;
-  padding: 9px 14px;
-  font-weight: 700;
-  font-size: .83rem;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+/* ── BAR VIZ ── */
+.bw { display:flex; align-items:center; gap:5px; justify-content:flex-end }
+.bb { width:54px; height:5px; background:var(--surface2); border-radius:3px; overflow:hidden; flex-shrink:0 }
+.f68 { height:100%; background:var(--c68); border-radius:3px }
+.f69 { height:100%; background:var(--c69); border-radius:3px }
+.bv { font-family:var(--mono); font-size:.68rem; min-width:44px; text-align:right }
 
 /* ── LEGEND ── */
-.legend { display: flex; gap: 16px; font-size: .75rem; color: var(--muted); margin-bottom: 10px; align-items: center; }
-.leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+.leg { display:flex; gap:16px; font-size:.72rem; color:var(--muted); margin-bottom:10px; align-items:center; flex-wrap:wrap }
+.ld { width:10px; height:10px; border-radius:2px; display:inline-block; flex-shrink:0 }
 
-@media(max-width:640px){
-  td,th { padding: 6px 8px; font-size: .73rem; }
-  .bar-bg { width: 50px; }
-  .page { padding: 16px 12px; }
+/* ── NOTE ── */
+.note { font-size:.73rem; color:#92400e; background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:10px 14px; margin-bottom:14px; line-height:1.6 }
+
+/* ── MONTHLY BAR CHART ── */
+.chart-wrap { padding:16px; overflow-x:auto }
+.chart { display:flex; gap:6px; align-items:flex-end; min-height:140px; min-width:600px }
+.chart-col { display:flex; flex-direction:column; align-items:center; gap:3px; flex:1; min-width:36px }
+.chart-bars { display:flex; gap:2px; align-items:flex-end; width:100% }
+.bar { border-radius:3px 3px 0 0; flex:1; min-height:2px; transition:opacity .15s }
+.bar:hover { opacity:.75 }
+.chart-label { font-size:.63rem; color:var(--muted); font-family:var(--mono); white-space:nowrap }
+.chart-val68 { font-size:.6rem; color:var(--c68); font-family:var(--mono); display:none }
+.chart-col:hover .chart-val68 { display:block }
+
+/* ── MONTH TABLE ── */
+.tbl-month th, .tbl-month td { padding:6px 9px; font-size:.74rem }
+.m-blank { color:var(--muted2) }
+
+@media(max-width:900px) { .cards { grid-template-columns:repeat(3,1fr) } }
+@media(max-width:640px) {
+  .cards { grid-template-columns:1fr 1fr }
+  td,th { padding:5px 7px; font-size:.7rem }
+  .bb { width:36px }
+  .page { padding:12px 10px }
+  .chart { min-width:460px }
 }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
 <div class="nav">
   <div class="nav-brand">📊 สรุปกำไรขาย</div>
   <div class="nav-tabs">
-    <div class="nav-tab active" onclick="go(0)">หน้า 1 · ภาพรวม กรุงเทพ</div>
-    <div class="nav-tab" onclick="go(1)">หน้า 2 · ภาพรวม พัทยา</div>
-    <div class="nav-tab" onclick="go(2)">หน้า 3 · รายสินค้า กรุงเทพ</div>
-    <div class="nav-tab" onclick="go(3)">หน้า 4 · รายสินค้า พัทยา</div>
+    <div class="nav-tab active" id="tab0" onclick="go(0)">หน้า 1 · ภาพรวม กรุงเทพ</div>
+    <div class="nav-tab" id="tab1" onclick="go(1)">หน้า 2 · ภาพรวม พัทยา</div>
+    <div class="nav-tab" id="tab2" onclick="go(2)">หน้า 3 · รายสินค้า กรุงเทพ</div>
+    <div class="nav-tab" id="tab3" onclick="go(3)">หน้า 4 · รายสินค้า พัทยา</div>
+  </div>
+  <div class="nav-right">
+    <button class="btn-refresh" onclick="loadData(true)" id="btn-refresh">↺ รีเฟรช</button>
+    <a class="btn-sheet" href="https://docs.google.com/spreadsheets/d/15b_m7yDpWC0lUnt-_4sfAoayg3ysvDiE62WagXEKDiU/edit" target="_blank">
+      📋 DATA
+    </a>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     PAGE 1 · ภาพรวม กรุงเทพ
-══════════════════════════════════════════ -->
+<!-- PAGE 1 · กรุงเทพ -->
 <div class="page active" id="p0">
   <div class="page-title">ภาพรวมกำไร — กรุงเทพ</div>
-  <div class="page-sub">เปรียบเทียบกำไรรวมรายกลุ่มสินค้า ปี 2568 vs 2569 (ม.ค.–พ.ค.) · หน่วย: บาท</div>
+  <div class="page-sub" id="bkk-sub">กำลังโหลดข้อมูล...</div>
+  <div id="bkk-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูลจาก Google Sheets...</span></div></div>
+</div>
 
+<!-- PAGE 2 · พัทยา -->
+<div class="page" id="p1">
+  <div class="page-title">ภาพรวมกำไร — พัทยา</div>
+  <div class="page-sub" id="ptt-sub">กำลังโหลดข้อมูล...</div>
+  <div id="ptt-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูลจาก Google Sheets...</span></div></div>
+</div>
+
+<!-- PAGE 3 · รายสินค้า กรุงเทพ -->
+<div class="page" id="p2">
+  <div class="page-title">รายสินค้า — กรุงเทพ</div>
+  <div class="page-sub">รายละเอียดรายสินค้าแยกตามเดือน · หน่วย: บาท</div>
+  <div id="bkk-detail-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูล...</span></div></div>
+</div>
+
+<!-- PAGE 4 · รายสินค้า พัทยา -->
+<div class="page" id="p3">
+  <div class="page-title">รายสินค้า — พัทยา</div>
+  <div class="page-sub">รายละเอียดรายสินค้าแยกตามเดือน · หน่วย: บาท</div>
+  <div id="ptt-detail-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูล...</span></div></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════
+const SHEET_ID = '15b_m7yDpWC0lUnt-_4sfAoayg3ysvDiE62WagXEKDiU';
+// ── GID ของแต่ละ sheet (ดูได้จาก URL เมื่อคลิกชีทนั้นใน Google Sheets: ...edit#gid=XXXXXXX)
+const GIDS = {
+  bkk:       '71451120',    // ← กรุงเทพ (จาก URL ที่ให้มา)
+  ptt:       'PUT_PTT_GID_HERE',       // ← ใส่ gid ชีท พัทยา
+  bkkDetail: 'PUT_BKKDETAIL_GID_HERE', // ← ใส่ gid ชีท รายละเอียดกรุงเทพ
+  pttDetail: 'PUT_PTTDETAIL_GID_HERE', // ← ใส่ gid ชีท รายละเอียดพัทยา
+};
+
+const MONTHS_TH = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+
+// ── Navigation ──
+function go(n) {
+  document.querySelectorAll('.page').forEach((p,i)=>p.classList.toggle('active',i===n));
+  document.querySelectorAll('.nav-tab').forEach((t,i)=>t.classList.toggle('active',i===n));
+}
+
+// ── CSV helpers ──
+function parseCSV(text) {
+  const rows = [];
+  for (const line of text.split(/\r?\n/)) {
+    if (!line.trim()) continue;
+    const cols = []; let cur='', inQ=false;
+    for (let i=0;i<line.length;i++) {
+      const ch=line[i];
+      if (ch==='"') { if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ; }
+      else if (ch===','&&!inQ) { cols.push(cur); cur=''; }
+      else cur+=ch;
+    }
+    cols.push(cur);
+    rows.push(cols);
+  }
+  return rows;
+}
+
+async function fetchSheet(gid) {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status} (gid=${gid})`);
+  return parseCSV(await res.text());
+}
+
+function n(s) {
+  if (s===null||s===undefined||s==='') return null;
+  const v = parseFloat(String(s).replace(/,/g,''));
+  return isNaN(v) ? null : v;
+}
+
+function fmt(v, short=false) {
+  if (v===null||v===undefined) return '—';
+  if (short) return new Intl.NumberFormat('th-TH',{maximumFractionDigits:0}).format(v);
+  return new Intl.NumberFormat('th-TH',{maximumFractionDigits:0}).format(v);
+}
+
+function fmtM(v) { // ล้าน
+  if (v===null) return '—';
+  return (v/1000000).toFixed(2)+'M';
+}
+
+function safe(v) { return (typeof v==='number'&&!isNaN(v))?v:0; }
+
+function pctBadge(pct) {
+  if (pct===null||isNaN(pct)) return '<span class="badge bn">—</span>';
+  const cls = pct>=0?'bu':'bd';
+  const sign = pct>=0?'+':'';
+  return `<span class="badge ${cls}">${sign}${pct.toFixed(1)}%</span>`;
+}
+
+function barWidth(val, max) {
+  if (!max) return 0;
+  return Math.min(100, Math.round(Math.abs(val)/max*100));
+}
+
+// ══════════════════════════════════════════════
+//  PARSE SUMMARY SHEET (กรุงเทพ / พัทยา)
+//  โครงสร้าง: col pairs = (2568m1,2569m1, 2568m2,2569m2 ...)
+//  กำไรรวม rows 2-17, สัดส่วนขายออก rows 23-38
+// ══════════════════════════════════════════════
+function parseSummarySheet(rows) {
+  // col indices (0-based):
+  // เดือน1: 2568=col2, 2569=col3 ... เดือน12: 2568=col24, 2569=col25
+  const cols68 = [2,4,6,8,10,12,14,16,18,20,22,24];
+  const cols69 = [3,5,7,9,11,13,15,17,19,21,23,25];
+
+  const products = [];
+  for (const row of rows) {
+    if (row[0]==='กำไรรวม' && row[1] && row[1]!=='รวมทุกกลุ่ม') {
+      const v68 = cols68.map(c=>n(row[c]));
+      const v69 = cols69.map(c=>n(row[c]));
+      products.push({ name:row[1], v68, v69 });
+    }
+  }
+
+  const ratios = [];
+  for (const row of rows) {
+    if (row[0]==='สัดส่วนขายออก' && row[1] && row[1]!=='รวมทุกกลุ่ม') {
+      // เดือน 1-12 สัดส่วน
+      const r68 = cols68.map(c=>n(row[c]));
+      const r69 = cols69.map(c=>n(row[c]));
+      ratios.push({ name:row[1], r68, r69 });
+    }
+  }
+
+  // ตรวจสอบมีเดือนไหนบ้างใน 2569 (ไม่ใช่ 0 และไม่ใช่ null)
+  const activeMonths69 = [];
+  for (let m=0;m<12;m++) {
+    const total = products.reduce((s,p)=>s+safe(p.v69[m]),0);
+    if (total>0) activeMonths69.push(m);
+  }
+  const nMonths69 = activeMonths69.length || 1;
+  const nMonths68_eq = nMonths69; // เปรียบเทียบ 2568 เฉพาะ nMonths69 เดือนแรก
+
+  // คำนวณต่อ product
+  for (const p of products) {
+    p.sum68_full = p.v68.reduce((s,v)=>s+safe(v),0);
+    p.sum68_5m   = p.v68.slice(0,nMonths69).reduce((s,v)=>s+safe(v),0);
+    p.sum69_5m   = p.v69.slice(0,nMonths69).reduce((s,v)=>s+safe(v),0);
+    p.diff_bath  = p.sum69_5m - p.sum68_5m;
+    p.diff_pct   = p.sum68_5m ? (p.diff_bath/p.sum68_5m*100) : null;
+  }
+
+  // สัดส่วน: เฉลี่ย nMonths69 เดือนแรก
+  for (const r of ratios) {
+    const r68vals = r.r68.slice(0,nMonths69).filter(v=>v!==null);
+    const r69vals = r.r69.slice(0,nMonths69).filter(v=>v!==null&&v>0);
+    r.avg68 = r68vals.length ? r68vals.reduce((a,b)=>a+b,0)/r68vals.length : 0;
+    r.avg69 = r69vals.length ? r69vals.reduce((a,b)=>a+b,0)/r69vals.length : 0;
+  }
+
+  const total68_full = products.reduce((s,p)=>s+p.sum68_full,0);
+  const total68_5m   = products.reduce((s,p)=>s+p.sum68_5m,0);
+  const total69_5m   = products.reduce((s,p)=>s+p.sum69_5m,0);
+  const diff_bath    = total69_5m - total68_5m;
+  const diff_pct     = total68_5m ? (diff_bath/total68_5m*100) : 0;
+
+  // รายเดือน (กำไรรวม)
+  const monthly = [];
+  for (let m=0;m<12;m++) {
+    monthly.push({
+      m,
+      s68: products.reduce((s,p)=>s+safe(p.v68[m]),0),
+      s69: products.reduce((s,p)=>s+safe(p.v69[m]),0),
+    });
+  }
+
+  return { products, ratios, total68_full, total68_5m, total69_5m, diff_bath, diff_pct, monthly, nMonths69, activeMonths69 };
+}
+
+// ══════════════════════════════════════════════
+//  RENDER PAGE 1/2  (ภาพรวม)
+// ══════════════════════════════════════════════
+function renderOverview(data, contentId, subId, city) {
+  const { products, ratios, total68_full, total68_5m, total69_5m, diff_bath, diff_pct, monthly, nMonths69 } = data;
+  const mLabel = nMonths69<=5 ? `${nMonths69} เดือนแรก` : `${nMonths69} เดือน`;
+
+  document.getElementById(subId).textContent =
+    `ปี 2568 = เต็มปี (ม.ค.–ธ.ค.) · ปี 2569 = ม.ค.–${MONTHS_TH[nMonths69-1]} เท่านั้น · หน่วย: บาท · โหลดล่าสุด ${new Date().toLocaleTimeString('th-TH')}`;
+
+  const diffClass = diff_pct>=0?'c-green':'c-red';
+  const diffSign  = diff_pct>=0?'+':'';
+  const diffBathSign = diff_bath>=0?'+':'';
+
+  // ── 5 กล่อง ──
+  const cards = `
+  <div class="sec-title">📦 สรุปภาพรวม</div>
   <div class="cards">
     <div class="card">
-      <div class="card-label">กำไรรวม 2568 (5 เดือน)</div>
-      <div class="card-value">31,682,387</div>
-      <div class="card-sub">ม.ค.–พ.ค. 2568</div>
+      <div class="card-label">กำไรรวม 2568<br>เต็มปี (ม.ค.–ธ.ค.)</div>
+      <div class="card-value c-68">${fmt(total68_full)}</div>
+      <div class="card-sub">12 เดือน</div>
     </div>
     <div class="card">
-      <div class="card-label">กำไรรวม 2569 (5 เดือน)</div>
-      <div class="card-value g">35,665,653</div>
-      <div class="card-sub">ม.ค.–พ.ค. 2569</div>
+      <div class="card-label">กำไรรวม 2568<br>(${mLabel})</div>
+      <div class="card-value c-68">${fmt(total68_5m)}</div>
+      <div class="card-sub">ม.ค.–${MONTHS_TH[nMonths69-1]} 2568</div>
     </div>
     <div class="card">
-      <div class="card-label">เพิ่มขึ้น (บาท)</div>
-      <div class="card-value g">+3,983,266</div>
-      <div class="card-sub">YoY เปรียบเทียบ</div>
+      <div class="card-label">กำไรรวม 2569<br>(${mLabel})</div>
+      <div class="card-value c-69">${fmt(total69_5m)}</div>
+      <div class="card-sub">ม.ค.–${MONTHS_TH[nMonths69-1]} 2569</div>
     </div>
     <div class="card">
-      <div class="card-label">เพิ่มขึ้น (%)</div>
-      <div class="card-value a">+12.6%</div>
-      <div class="card-sub">Year-over-Year</div>
+      <div class="card-label">±บาท<br>2569 vs 2568 (${mLabel})</div>
+      <div class="card-value ${diffClass}">${diffBathSign}${fmt(diff_bath)}</div>
+      <div class="card-sub">เปลี่ยนแปลงสุทธิ</div>
     </div>
     <div class="card">
-      <div class="card-label">กลุ่มที่โตสูงสุด</div>
-      <div class="card-value a" style="font-family:var(--font);font-size:1rem">ผนังซีลาย</div>
-      <div class="card-sub">+31.9% YoY</div>
+      <div class="card-label">±%<br>2569 vs 2568 (${mLabel})</div>
+      <div class="card-value ${diffClass}">${diffSign}${diff_pct.toFixed(2)}%</div>
+      <div class="card-sub">อัตราการเติบโต</div>
     </div>
-    <div class="card">
-      <div class="card-label">กลุ่มที่ลดมากสุด</div>
-      <div class="card-value r" style="font-family:var(--font);font-size:1rem">ไม้เบญ</div>
-      <div class="card-sub">-27.7% YoY</div>
-    </div>
-  </div>
+  </div>`;
 
-  <div class="legend">
-    <div style="display:flex;align-items:center;gap:5px"><div class="leg-dot" style="background:var(--c68)"></div>ปี 2568</div>
-    <div style="display:flex;align-items:center;gap:5px"><div class="leg-dot" style="background:var(--c69)"></div>ปี 2569</div>
-  </div>
+  // ── ตารางรายกลุ่ม (5 เดือน) ──
+  const maxRatio = Math.max(...ratios.map(r=>Math.max(r.avg68,r.avg69)));
+  let tRows = '';
+  for (const p of products) {
+    const r = ratios.find(x=>x.name===p.name) || {avg68:0,avg69:0};
+    const bw68 = barWidth(r.avg68, maxRatio);
+    const bw69 = barWidth(r.avg69, maxRatio);
+    tRows += `<tr>
+      <td class="L">${p.name}</td>
+      <td>${fmt(p.sum68_5m)}</td>
+      <td><div class="bw"><div class="bb"><div class="f68" style="width:${bw68}%"></div></div><span class="bv">${r.avg68.toFixed(2)}%</span></div></td>
+      <td>${fmt(p.sum69_5m)}</td>
+      <td><div class="bw"><div class="bb"><div class="f69" style="width:${bw69}%"></div></div><span class="bv">${r.avg69.toFixed(2)}%</span></div></td>
+      <td>${pctBadge(p.diff_pct)}</td>
+    </tr>`;
+  }
+  // total ratio
+  const totalR68 = ratios.reduce((s,r)=>s+r.avg68,0);
+  const totalR69 = ratios.reduce((s,r)=>s+r.avg69,0);
 
+  const tableGroup = `
+  <div class="sec-title">🏙️ กำไรรายกลุ่ม + สัดส่วน · ${city} (เปรียบเทียบ ${mLabel})</div>
+  <div class="note">📌 สัดส่วนดึงจากตาราง "สัดส่วนขายออก" ในไฟล์โดยตรง เฉลี่ยจาก ${nMonths69} เดือน — รวมสัดส่วนทุกกลุ่ม 2568 = ${totalR68.toFixed(2)}% / 2569 = ${totalR69.toFixed(2)}% (ไม่ถึง 100% เพราะมีสินค้านอกกลุ่มด้วย)</div>
+  <div class="leg">
+    <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c68)"></span>ปี 2568</div>
+    <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c69)"></span>ปี 2569</div>
+  </div>
   <div class="box">
-    <div class="box-head">🏙️ เปรียบเทียบกำไรรายกลุ่ม พร้อมสัดส่วน (เต็ม 100%)</div>
     <table>
-      <thead>
-        <tr>
-          <th class="lft">กลุ่มสินค้า</th>
-          <th>กำไร 2568</th>
-          <th>สัดส่วน 2568</th>
-          <th>กำไร 2569</th>
-          <th>สัดส่วน 2569</th>
-          <th>±บาท</th>
-          <th>±%</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="lft">เหล็กเส้น</td>
-          <td>1,671,326</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:42%"></div></div><span class="bar-label">5.3%</span></div></td>
-          <td>1,944,622</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:44%"></div></div><span class="bar-label">5.5%</span></div></td>
-          <td class="up">+273,296</td>
-          <td><span class="badge bu">+16.3%</span></td>
-        </tr>
-        <tr>
-          <td class="lft">จระเข้</td>
-          <td>806,463</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:20%"></div></div><span class="bar-label">2.5%</span></div></td>
-          <td>895,069</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:20%"></div></div><span class="bar-label">2.5%</span></div></td>
-          <td class="up">+88,606</td>
-          <td><span class="badge bu">+11.0%</span></td>
-        </tr>
-        <tr>
-          <td class="lft">เหล็กรูป</td>
-          <td>965,825</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:24%"></div></div><span class="bar-label">3.0%</span></div></td>
-          <td>890,677</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:20%"></div></div><span class="bar-label">2.5%</span></div></td>
-          <td class="dn">-75,148</td>
-          <td><span class="badge bd">-7.8%</span></td>
-        </tr>
-        <tr>
-          <td class="lft">ไม้ยูคา</td>
-          <td>193,781</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:5%"></div></div><span class="bar-label">0.6%</span></div></td>
-          <td>192,343</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:4%"></div></div><span class="bar-label">0.5%</span></div></td>
-          <td class="dn">-1,438</td>
-          <td><span class="badge bd">-0.7%</span></td>
-        </tr>
-        <tr>
-          <td class="lft">ไม้อัดยาง</td>
-          <td>611,838</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:15%"></div></div><span class="bar-label">1.9%</span></div></td>
-          <td>743,514</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:17%"></div></div><span class="bar-label">2.1%</span></div></td>
-          <td class="up">+131,676</td>
-          <td><span class="badge bu">+21.5%</span></td>
-        </tr>
-        <tr>
-          <td class="lft">ซิก้า</td>
-          <td>199,972</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:5%"></div></div><span class="bar-label">0.6%</span></div></td>
-          <td>159,578</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:4%"></div></div><span class="bar-label">0.4%</span></div></td>
-          <td class="dn">-40,394</td>
-          <td><span class="badge bd">-20.2%</span></td>
-        </tr>
-        <tr>
-          <td class="lft">ควิกโค้ท</td>
-          <td>961,820</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:24%"></div></div><span class="bar-label">3.0%</span></div></td>
-          <td>1,078,958</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:24%"></div></div><span class="bar-label">3.0%</span></div></td>
-          <td class="up">+117,138</td>
-          <td><span class="badge bu">+12.2%</span></td>
-        </tr>
-        <tr>
-          <td class="lft">วีว่าบอร์ด</td>
-          <td>135,302</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:3%"></div></div><span class="bar-label">0.4%</span></div></td>
-          <td>143,986</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:3%"></div></div><span class="bar-label">0.4%</span></div></td>
-          <td class="up">+8,684</td>
-          <td><span class="badge bu">+6.4%</span></td>
-        </tr>
-        <tr>
-          <td class="lft">ยิปซั่มสมาร์ทบอร์ด</td>
-          <td>671,610</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:17%"></div></div><span class="bar-label">2.1%</span></div></td>
-          <td>717,327</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:16%"></div></div><span class="bar-label">2.0%</span></div></td>
-          <td class="up">+45,717</td>
-          <td><span class="badge bu">+6.8%</span></td>
-        </tr>
-        <tr>
-          <td class="lft">ไวเมช</td>
-          <td>476,234</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:12%"></div></div><span class="bar-label">1.5%</span></div></td>
-          <td>461,452</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:10%"></div></div><span class="bar-label">1.3%</span></div></td>
-          <td class="dn">-14,782</td>
-          <td><span class="badge bd">-3.1%</span></td>
-        </tr>
-        <tr>
-          <td class="lft">ผนังซีลาย</td>
-          <td>387,262</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:10%"></div></div><span class="bar-label">1.2%</span></div></td>
-          <td>510,888</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:12%"></div></div><span class="bar-label">1.4%</span></div></td>
-          <td class="up">+123,626</td>
-          <td><span class="badge bu">+31.9%</span></td>
-        </tr>
-        <tr>
-          <td class="lft">ไม้เบญ</td>
-          <td>495,121</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:12%"></div></div><span class="bar-label">1.6%</span></div></td>
-          <td>358,096</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:8%"></div></div><span class="bar-label">1.0%</span></div></td>
-          <td class="dn">-137,025</td>
-          <td><span class="badge bd">-27.7%</span></td>
-        </tr>
-        <tr>
-          <td class="lft">ปูนเสือ</td>
-          <td>2,313,721</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:58%"></div></div><span class="bar-label">7.3%</span></div></td>
-          <td>2,781,915</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:62%"></div></div><span class="bar-label">7.8%</span></div></td>
-          <td class="up">+468,194</td>
-          <td><span class="badge bu">+20.2%</span></td>
-        </tr>
-        <tr>
-          <td class="lft">ทีพีไอ</td>
-          <td>4,750,457</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:100%"></div></div><span class="bar-label">15.0%</span></div></td>
-          <td>5,481,579</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:100%"></div></div><span class="bar-label">15.4%</span></div></td>
-          <td class="up">+731,122</td>
-          <td><span class="badge bu">+15.4%</span></td>
-        </tr>
-        <tr>
-          <td class="lft">หินทราย</td>
-          <td>12,557,973</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:100%"></div></div><span class="bar-label">39.6%</span></div></td>
-          <td>13,507,214</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:100%"></div></div><span class="bar-label">37.9%</span></div></td>
-          <td class="up">+949,241</td>
-          <td><span class="badge bu">+7.6%</span></td>
-        </tr>
-        <tr>
-          <td class="lft">คอนกรีต</td>
-          <td>4,800,683</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b68" style="width:100%"></div></div><span class="bar-label">15.2%</span></div></td>
-          <td>4,598,435</td>
-          <td><div class="bar-w"><div class="bar-bg"><div class="b69" style="width:93%"></div></div><span class="bar-label">12.9%</span></div></td>
-          <td class="dn">-202,248</td>
-          <td><span class="badge bd">-4.2%</span></td>
-        </tr>
+      <thead><tr>
+        <th class="L">กลุ่มสินค้า</th>
+        <th>กำไร 2568 (${mLabel}) บ.</th>
+        <th>สัดส่วน 2568 (%)</th>
+        <th>กำไร 2569 (${mLabel}) บ.</th>
+        <th>สัดส่วน 2569 (%)</th>
+        <th>±%</th>
+      </tr></thead>
+      <tbody>${tRows}
         <tr class="tot">
-          <td class="lft">รวมทุกกลุ่ม</td>
-          <td>31,682,387</td>
-          <td><span class="bar-label" style="font-family:var(--mono)">100.0%</span></td>
-          <td>35,665,653</td>
-          <td><span class="bar-label" style="font-family:var(--mono)">100.0%</span></td>
-          <td class="up">+3,983,266</td>
-          <td><span class="badge bu">+12.6%</span></td>
+          <td class="L">รวมทุกกลุ่ม</td>
+          <td>${fmt(total68_5m)}</td>
+          <td><span class="bv" style="color:var(--muted)">${totalR68.toFixed(2)}%</span></td>
+          <td>${fmt(total69_5m)}</td>
+          <td><span class="bv" style="color:var(--muted)">${totalR69.toFixed(2)}%</span></td>
+          <td>${pctBadge(diff_pct)}</td>
         </tr>
       </tbody>
     </table>
+  </div>`;
+
+  // ── ตารางรายเดือน ──
+  const maxMonthly = Math.max(...monthly.map(m=>Math.max(m.s68,m.s69)));
+  let mRows = '';
+  for (const m of monthly) {
+    const has69 = m.s69 > 0;
+    const diff = has69 ? m.s69-m.s68 : null;
+    const pct  = (has69 && m.s68) ? (diff/m.s68*100) : null;
+    const bh68 = m.s68 ? Math.round(m.s68/maxMonthly*80) : 0;
+    const bh69 = m.s69 ? Math.round(m.s69/maxMonthly*80) : 0;
+    mRows += `<tr>
+      <td class="L">${MONTHS_TH[m.m]}</td>
+      <td>${fmt(m.s68)}</td>
+      <td>${has69 ? fmt(m.s69) : '<span class="m-blank">—</span>'}</td>
+      <td>${diff!==null ? (diff>=0?'+':'')+fmt(diff) : '<span class="m-blank">—</span>'}</td>
+      <td>${diff!==null ? pctBadge(pct) : '<span class="m-blank">—</span>'}</td>
+    </tr>`;
+  }
+
+  // Bar mini chart
+  let chartCols = '';
+  for (const m of monthly) {
+    const has69 = m.s69 > 0;
+    const bh68 = m.s68 ? Math.round(m.s68/maxMonthly*110) : 0;
+    const bh69 = m.s69 ? Math.round(m.s69/maxMonthly*110) : 0;
+    chartCols += `<div class="chart-col">
+      <div class="chart-bars">
+        <div class="bar" style="background:var(--c68);height:${bh68}px" title="2568 ${MONTHS_TH[m.m]}: ${fmt(m.s68)}"></div>
+        <div class="bar" style="background:${has69?'var(--c69)':'var(--border)'};height:${has69?bh69:4}px;opacity:${has69?1:.4}" title="2569 ${MONTHS_TH[m.m]}: ${has69?fmt(m.s69):'ยังไม่มีข้อมูล'}"></div>
+      </div>
+      <div class="chart-label">${MONTHS_TH[m.m]}</div>
+    </div>`;
+  }
+
+  const tableMonthly = `
+  <div class="sec-title">📅 กำไรรายเดือน เปรียบเทียบ 2568 vs 2569</div>
+  <div class="box">
+    <div class="box-head">📊 Bar Chart รายเดือน <span style="color:var(--muted);font-weight:400;font-size:.75rem">— แถบสีส้ม=2568 · สีน้ำเงิน=2569</span></div>
+    <div class="chart-wrap"><div class="chart">${chartCols}</div></div>
   </div>
-</div>
+  <div class="box">
+    <div class="box-head">🗓️ ตารางรายเดือน</div>
+    <table class="tbl-month">
+      <thead><tr>
+        <th class="L">เดือน</th>
+        <th>กำไร 2568 (บ.)</th>
+        <th>กำไร 2569 (บ.)</th>
+        <th>±บาท</th>
+        <th>±%</th>
+      </tr></thead>
+      <tbody>${mRows}</tbody>
+    </table>
+  </div>`;
 
-<!-- ══════════════════════════════════════════
-     PAGE 2 · ภาพรวม พัทยา
-══════════════════════════════════════════ -->
-<div class="page" id="p1">
-  <div class="page-title">ภาพรวมกำไร — พัทยา</div>
-  <div class="page-sub">เปรียบเทียบกำไรรวมรายกลุ่มสินค้า ปี 2568 vs 2569 (ม.ค.–พ.ค.) · หน่วย: บาท</div>
+  document.getElementById(contentId).innerHTML = cards + tableGroup + tableMonthly;
+}
 
-  <div class="cards">
-    <div class="card">
-      <div class="card-label">กำไรรวม 2568 (5 เดือน)</div>
-      <div class="card-value">1,133,818</div>
-      <div class="card-sub">ม.ค.–พ.ค. 2568</div>
-    </div>
-    <div class="card">
-      <div class="card-label">กำไรรวม 2569 (5 เดือน)</div>
-      <div class="card-value g">1,268,952</div>
-      <div class="card-sub">ม.ค.–พ.ค. 2569</div>
-    </div>
-    <div class="card">
-      <div class="card-label">เพิ่มขึ้น (บาท)</div>
-      <div class="card-value g">+135,134</div>
-      <div class="card-sub">YoY เปรียบเทียบ</div>
-    </div>
-    <div class="card">
-      <div class="card-label">เพิ่มขึ้น (%)</div>
-      <div class="card-value a">+11.9%</div>
-      <div class="card-sub">Year-over-Year</div>
-    </div>
-    <div class="card">
-      <div class="card-label">กลุ่มที่โตสูงสุด</div>
-      <div class="card-value a" style="font-family:var(--font);font-size:1rem">จระเข้</div>
-      <div class="card-sub">มีข้อมูลเพิ่ม 2569</div>
-    </div>
-    <div class="card">
-      <div class="card-label">สินค้าหลัก</div>
-      <div class="card-value a" style="font-family:var(--font);font-size:1rem">หินทราย</div>
-      <div class="card-sub">สัดส่วนสูงสุด</div>
-    </div>
-  </div>
+// ══════════════════════════════════════════════
+//  PARSE + RENDER DETAIL SHEET (หน้า 3/4)
+// ══════════════════════════════════════════════
+function parseDetailSheet(rows) {
+  // ต้องดูก่อนว่าโครงสร้างเป็นอย่างไร
+  return rows;
+}
 
-  <div class="legend">
-    <div style="display:flex;align-items:center;gap:5px"><div class="leg-dot" style="background:var(--c68)"></div>ปี 2568</div>
-    <div style="display:flex;align-items:center;gap:5px"><div class="leg-dot" style="background:var(--c69)"></div>ปี 2569</div>
-  </div>
+function renderDetail(rows, contentId, city) {
+  if (!rows || rows.length < 2) {
+    document.getElementById(contentId).innerHTML = '<div class="err-box">ไม่พบข้อมูล หรือ Sheet ยังไม่เปิด Public</div>';
+    return;
+  }
+  // แสดงตารางดิบสวยงาม
+  const header = rows[0];
+  let thead = '<tr>' + header.map(h=>`<th class="L">${h||''}</th>`).join('') + '</tr>';
+  let tbody = '';
+  for (let i=1;i<rows.length;i++) {
+    const r = rows[i];
+    if (r.every(c=>!c)) continue;
+    tbody += '<tr>' + r.map((c,ci)=>{
+      const num = n(c);
+      if (ci>0 && num!==null) return `<td>${fmt(num)}</td>`;
+      return `<td class="L">${c||''}</td>`;
+    }).join('') + '</tr>';
+  }
+  document.getElementById(contentId).innerHTML = `
+    <div class="note">📋 ข้อมูลดิบจากชีท "${city}" — ดึงสดจาก Google Sheets</div>
+    <div class="box" style="overflow-x:auto">
+      <table><thead>${thead}</thead><tbody>${tbody}</tbody></table>
+    </div>`;
+}
 
-  
+// ══════════════════════════════════════════════
+//  LOAD ALL DATA
+// ══════════════════════════════════════════════
+let dataCache = null;
+
+async function loadData(force=false) {
+  if (!force && dataCache) return;
+  document.getElementById('btn-refresh').textContent = '⟳ กำลังโหลด...';
+  document.getElementById('btn-refresh').disabled = true;
+
+  try {
+    // ดึง 4 sheets พร้อมกัน
+    const [bkkRows, pttRows] = await Promise.all([
+      fetchSheet(GIDS.bkk),
+      fetchSheet(GIDS.ptt),
+    ]);
+
+    const bkkData = parseSummarySheet(bkkRows);
+    const pttData = parseSummarySheet(pttRows);
+
+    renderOverview(bkkData, 'bkk-content', 'bkk-sub', 'กรุงเทพ');
+    renderOverview(pttData, 'ptt-content', 'ptt-sub', 'พัทยา');
+
+    dataCache = { bkkData, pttData };
+
+    // ดึง detail sheets (อาจ fail ถ้า gid ผิด — ไม่ block main)
+    loadDetailSheets();
+
+  } catch(e) {
+    console.error(e);
+    const errHtml = `<div class="err-box">⚠️ โหลดข้อมูลไม่ได้: ${e.message}<br>ตรวจสอบว่า Google Sheet ตั้งค่า "เผยแพร่สู่สาธารณะ" แล้ว</div>`;
+    document.getElementById('bkk-content').innerHTML = errHtml;
+    document.getElementById('ptt-content').innerHTML = errHtml;
+  } finally {
+    document.getElementById('btn-refresh').textContent = '↺ รีเฟรช';
+    document.getElementById('btn-refresh').disabled = false;
+  }
+}
+
+async function loadDetailSheets() {
+  // หา gid ของชีทอื่นจาก spreadsheet (ลองดึง sheet list)
+  try {
+    // ลองดึง gid จาก export ปกติ (default sheet = gid=0)
+    // แต่เราไม่รู้ gid จริง — ลองใช้ชื่อชีทแทนไม่ได้ใน CSV export
+    // ใช้วิธี: fetch gid=0 = sheet แรก, gid ที่ให้มาคือกรุงเทพ
+    // สำหรับ detail: ใส่ไว้เป็น placeholder ก่อน จะอัปเดตได้ง่าย
+    const urls = [
+      { id:'bkk-detail-content', gid: GIDS.bkkDetail, city:'รายละเอียดกรุงเทพ' },
+      { id:'ptt-detail-content', gid: GIDS.pttDetail, city:'รายละเอียดพัทยา' },
+    ];
+    for (const u of urls) {
+      fetchSheet(u.gid).then(rows=>renderDetail(rows, u.id, u.city)).catch(e=>{
+        document.getElementById(u.id).innerHTML =
+          `<div class="err-box">⚠️ โหลด Sheet "${u.city}" ไม่ได้<br>กรุณาอัปเดต GID ใน CONFIG (ดูจาก URL ของ Sheet)<br>Error: ${e.message}</div>`;
+      });
+    }
+  } catch(e) { console.warn('Detail load error:', e); }
+}
+
+// ── Start ──
+loadData();
+</script>
+</body>
+</html>
