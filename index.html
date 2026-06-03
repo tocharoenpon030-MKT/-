@@ -198,7 +198,17 @@ async function fetchSheet(gid) {
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`HTTP ${res.status} (gid=${gid})`);
-  return parseCSV(await res.text());
+  const text = await res.text();
+  if (gid === GIDS.bkk) {
+    console.log('RAW 5 rows:');
+    text.split('\n').slice(0,5).forEach((l,i)=>console.log('R'+(i+1)+':',l.substring(0,300)));
+    const p = parseCSV(text);
+    console.log('PARSED R1:', JSON.stringify(p[0]));
+    console.log('PARSED R2:', JSON.stringify(p[1]));
+    console.log('Total rows:', p.length);
+    return p;
+  }
+  return parseCSV(text);
 }
 
 function n(s) {
