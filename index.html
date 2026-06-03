@@ -16,7 +16,7 @@
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
 body { font-family:var(--font); background:var(--surface); color:var(--text); font-size:14px; min-height:100vh }
 
-/* ── NAV ── */
+/* NAV */
 .nav { background:#111827; display:flex; align-items:center; position:sticky; top:0; z-index:9999; box-shadow:0 2px 12px rgba(0,0,0,.4); flex-wrap:wrap }
 .nav-brand { color:var(--accent); font-size:.9rem; font-weight:700; padding:13px 18px; border-right:1px solid rgba(255,255,255,.1); white-space:nowrap; flex-shrink:0 }
 .nav-tabs { display:flex; overflow-x:auto; flex:1 }
@@ -29,20 +29,20 @@ body { font-family:var(--font); background:var(--surface); color:var(--text); fo
 .btn-refresh { background:rgba(224,123,30,.15); border:1px solid rgba(224,123,30,.3); color:var(--accent); font-family:var(--font); font-size:.75rem; padding:6px 10px; border-radius:6px; cursor:pointer; transition:all .15s }
 .btn-refresh:hover { background:rgba(224,123,30,.25) }
 
-/* ── PAGE ── */
-.page { display:none; padding:22px 18px; max-width:1260px; margin:0 auto }
+/* PAGE */
+.page { display:none; padding:22px 18px; max-width:1320px; margin:0 auto }
 .page.active { display:block }
 .page-title { font-size:1.2rem; font-weight:700; margin-bottom:3px }
 .page-sub { font-size:.78rem; color:var(--muted); margin-bottom:16px }
 .sec-title { font-size:.84rem; font-weight:700; margin:20px 0 10px; padding-left:10px; border-left:3px solid var(--accent); display:flex; align-items:center; gap:8px }
 
-/* ── LOADING ── */
+/* LOADING */
 .loading-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:80px 20px; color:var(--muted) }
 .spinner { width:36px; height:36px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite }
 @keyframes spin { to { transform:rotate(360deg) } }
 .err-box { background:#fef2f2; border:1px solid #fecaca; border-radius:var(--r); padding:16px 20px; color:#b91c1c; font-size:.83rem; line-height:1.6 }
 
-/* ── CARDS ── */
+/* CARDS */
 .cards { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin-bottom:18px }
 .card { background:var(--bg); border:1px solid var(--border); border-radius:var(--r); padding:14px 16px }
 .card-label { font-size:.68rem; color:var(--muted); margin-bottom:6px; font-weight:600; text-transform:uppercase; letter-spacing:.03em; line-height:1.4 }
@@ -51,7 +51,7 @@ body { font-family:var(--font); background:var(--surface); color:var(--text); fo
 .c-green { color:var(--green) } .c-red { color:var(--red) } .c-acc { color:var(--accent) }
 .c-68 { color:var(--c68) } .c-69 { color:var(--c69) }
 
-/* ── BOX / TABLE ── */
+/* BOX / TABLE */
 .box { background:var(--bg); border:1px solid var(--border); border-radius:var(--r); overflow:hidden; margin-bottom:18px }
 .box-head { padding:10px 16px; border-bottom:1px solid var(--border); font-weight:700; font-size:.82rem; background:var(--surface); display:flex; align-items:center; gap:8px }
 table { width:100%; border-collapse:collapse; font-size:.78rem }
@@ -64,27 +64,31 @@ tr:hover td { background:rgba(0,0,0,.018) }
 tr.tot td { background:#fff7ed; font-weight:700; border-top:2px solid var(--accent); border-bottom:none }
 tr.tot td.L { font-family:var(--font) }
 
-/* ── BADGES ── */
+/* cross-table: year header rows */
+tr.yr-head68 td { background:#fff7ed; font-weight:700; color:var(--c68); font-size:.72rem; border-top:2px solid var(--c68) }
+tr.yr-head69 td { background:#eff6ff; font-weight:700; color:var(--c69); font-size:.72rem; border-top:2px solid var(--c69) }
+
+/* BADGES */
 .badge { display:inline-block; padding:2px 8px; border-radius:20px; font-size:.67rem; font-weight:600; font-family:var(--mono) }
 .bu { background:#dcfce7; color:var(--green) }
 .bd { background:#fee2e2; color:var(--red) }
 .bn { background:var(--surface2); color:var(--muted) }
 
-/* ── BAR VIZ ── */
+/* BAR VIZ */
 .bw { display:flex; align-items:center; gap:5px; justify-content:flex-end }
 .bb { width:54px; height:5px; background:var(--surface2); border-radius:3px; overflow:hidden; flex-shrink:0 }
 .f68 { height:100%; background:var(--c68); border-radius:3px }
 .f69 { height:100%; background:var(--c69); border-radius:3px }
 .bv { font-family:var(--mono); font-size:.68rem; min-width:44px; text-align:right }
 
-/* ── LEGEND ── */
+/* LEGEND */
 .leg { display:flex; gap:16px; font-size:.72rem; color:var(--muted); margin-bottom:10px; align-items:center; flex-wrap:wrap }
 .ld { width:10px; height:10px; border-radius:2px; display:inline-block; flex-shrink:0 }
 
-/* ── NOTE ── */
+/* NOTE */
 .note { font-size:.73rem; color:#92400e; background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:10px 14px; margin-bottom:14px; line-height:1.6 }
 
-/* ── MONTHLY BAR CHART ── */
+/* MONTHLY BAR CHART */
 .chart-wrap { padding:16px; overflow-x:auto }
 .chart { display:flex; gap:6px; align-items:flex-end; min-height:140px; min-width:600px }
 .chart-col { display:flex; flex-direction:column; align-items:center; gap:3px; flex:1; min-width:36px }
@@ -92,12 +96,34 @@ tr.tot td.L { font-family:var(--font) }
 .bar { border-radius:3px 3px 0 0; flex:1; min-height:2px; transition:opacity .15s }
 .bar:hover { opacity:.75 }
 .chart-label { font-size:.63rem; color:var(--muted); font-family:var(--mono); white-space:nowrap }
-.chart-val68 { font-size:.6rem; color:var(--c68); font-family:var(--mono); display:none }
-.chart-col:hover .chart-val68 { display:block }
-
-/* ── MONTH TABLE ── */
-.tbl-month th, .tbl-month td { padding:6px 9px; font-size:.74rem }
 .m-blank { color:var(--muted2) }
+.tbl-month th, .tbl-month td { padding:6px 9px; font-size:.74rem }
+
+/* CROSS TABLE (กลุ่ม × เดือน) */
+.tbl-cross { font-size:.72rem }
+.tbl-cross th { padding:6px 8px; font-size:.63rem }
+.tbl-cross td { padding:5px 8px; font-size:.72rem }
+.tbl-cross td.grp { font-family:var(--font); font-weight:600; text-align:left; white-space:nowrap; min-width:90px }
+.tbl-cross td.yr68 { color:var(--c68) }
+.tbl-cross td.yr69 { color:var(--c69) }
+.tbl-cross td.blank { color:var(--muted2) }
+.tbl-cross tr.tot-row td { background:#fff7ed; font-weight:700; border-top:2px solid var(--accent) }
+
+/* GROUP FILTER BUTTONS (หน้า 3/4) */
+.grp-filter { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:16px }
+.grp-btn { padding:5px 12px; border-radius:20px; border:1px solid var(--border); background:var(--bg); color:var(--muted); font-family:var(--font); font-size:.75rem; cursor:pointer; transition:all .15s; font-weight:500 }
+.grp-btn:hover { border-color:var(--accent); color:var(--accent) }
+.grp-btn.active { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600 }
+
+/* DETAIL TABLE (หน้า 3/4) */
+.tbl-detail { font-size:.75rem }
+.tbl-detail th { padding:7px 9px; font-size:.64rem }
+.tbl-detail td { padding:6px 9px }
+.tbl-detail td.L { font-size:.74rem }
+.cell-2row { line-height:1.3 }
+.cell-2row .row1 { font-family:var(--mono); }
+.cell-2row .row2 { font-size:.67rem; color:var(--muted); font-family:var(--mono); }
+.cell-2row .row2.profit { color:var(--green); }
 
 @media(max-width:900px) { .cards { grid-template-columns:repeat(3,1fr) } }
 @media(max-width:640px) {
@@ -121,37 +147,35 @@ tr.tot td.L { font-family:var(--font) }
   </div>
   <div class="nav-right">
     <button class="btn-refresh" onclick="loadData(true)" id="btn-refresh">↺ รีเฟรช</button>
-    <a class="btn-sheet" href="https://docs.google.com/spreadsheets/d/15b_m7yDpWC0lUnt-_4sfAoayg3ysvDiE62WagXEKDiU/edit" target="_blank">
-      📋 DATA
-    </a>
+    <a class="btn-sheet" href="https://docs.google.com/spreadsheets/d/15b_m7yDpWC0lUnt-_4sfAoayg3ysvDiE62WagXEKDiU/edit" target="_blank">📋 DATA</a>
   </div>
 </div>
 
-<!-- PAGE 1 · กรุงเทพ -->
+<!-- PAGE 1 -->
 <div class="page active" id="p0">
   <div class="page-title">ภาพรวมกำไร — กรุงเทพ</div>
   <div class="page-sub" id="bkk-sub">กำลังโหลดข้อมูล...</div>
   <div id="bkk-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูลจาก Google Sheets...</span></div></div>
 </div>
 
-<!-- PAGE 2 · พัทยา -->
+<!-- PAGE 2 -->
 <div class="page" id="p1">
   <div class="page-title">ภาพรวมกำไร — พัทยา</div>
   <div class="page-sub" id="ptt-sub">กำลังโหลดข้อมูล...</div>
   <div id="ptt-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูลจาก Google Sheets...</span></div></div>
 </div>
 
-<!-- PAGE 3 · รายสินค้า กรุงเทพ -->
+<!-- PAGE 3 -->
 <div class="page" id="p2">
   <div class="page-title">รายสินค้า — กรุงเทพ</div>
-  <div class="page-sub">รายละเอียดรายสินค้าแยกตามเดือน · หน่วย: บาท</div>
+  <div class="page-sub">รายละเอียดรายสินค้าแยกตามกลุ่ม · หน่วย: บาท</div>
   <div id="bkk-detail-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูล...</span></div></div>
 </div>
 
-<!-- PAGE 4 · รายสินค้า พัทยา -->
+<!-- PAGE 4 -->
 <div class="page" id="p3">
   <div class="page-title">รายสินค้า — พัทยา</div>
-  <div class="page-sub">รายละเอียดรายสินค้าแยกตามเดือน · หน่วย: บาท</div>
+  <div class="page-sub">รายละเอียดรายสินค้าแยกตามกลุ่ม · หน่วย: บาท</div>
   <div id="ptt-detail-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูล...</span></div></div>
 </div>
 
@@ -160,20 +184,18 @@ tr.tot td.L { font-family:var(--font) }
 //  CONFIG
 // ══════════════════════════════════════════════
 const SHEET_ID = '15b_m7yDpWC0lUnt-_4sfAoayg3ysvDiE62WagXEKDiU';
-// ── GID ของแต่ละ sheet (ดูได้จาก URL เมื่อคลิกชีทนั้นใน Google Sheets: ...edit#gid=XXXXXXX)
 const GIDS = {
   bkk:       '71451120',
   ptt:       '2027844530',
   bkkDetail: '2098854142',
   pttDetail: '795156374',
 };
-
 const MONTHS_TH = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 
 // ── Navigation ──
-function go(n) {
-  document.querySelectorAll('.page').forEach((p,i)=>p.classList.toggle('active',i===n));
-  document.querySelectorAll('.nav-tab').forEach((t,i)=>t.classList.toggle('active',i===n));
+function go(idx) {
+  document.querySelectorAll('.page').forEach((p,i)=>p.classList.toggle('active',i===idx));
+  document.querySelectorAll('.nav-tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
 }
 
 // ── CSV helpers ──
@@ -198,17 +220,7 @@ async function fetchSheet(gid) {
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${gid}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`HTTP ${res.status} (gid=${gid})`);
-  const text = await res.text();
-  if (gid === GIDS.bkk) {
-    console.log('RAW 5 rows:');
-    text.split('\n').slice(0,5).forEach((l,i)=>console.log('R'+(i+1)+':',l.substring(0,300)));
-    const p = parseCSV(text);
-    console.log('PARSED R1:', JSON.stringify(p[0]));
-    console.log('PARSED R2:', JSON.stringify(p[1]));
-    console.log('Total rows:', p.length);
-    return p;
-  }
-  return parseCSV(text);
+  return parseCSV(await res.text());
 }
 
 function n(s) {
@@ -216,143 +228,111 @@ function n(s) {
   const v = parseFloat(String(s).replace(/,/g,''));
   return isNaN(v) ? null : v;
 }
-
-function fmt(v, short=false) {
+function fmt(v) {
   if (v===null||v===undefined) return '—';
-  if (short) return new Intl.NumberFormat('th-TH',{maximumFractionDigits:0}).format(v);
   return new Intl.NumberFormat('th-TH',{maximumFractionDigits:0}).format(v);
 }
-
-function fmtM(v) { // ล้าน
-  if (v===null) return '—';
-  return (v/1000000).toFixed(2)+'M';
+function fmt2(v) {
+  if (v===null||v===undefined) return '—';
+  return new Intl.NumberFormat('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2}).format(v);
 }
-
 function safe(v) { return (typeof v==='number'&&!isNaN(v))?v:0; }
-
 function pctBadge(pct) {
   if (pct===null||isNaN(pct)) return '<span class="badge bn">—</span>';
   const cls = pct>=0?'bu':'bd';
-  const sign = pct>=0?'+':'';
-  return `<span class="badge ${cls}">${sign}${pct.toFixed(1)}%</span>`;
+  return `<span class="badge ${cls}">${pct>=0?'+':''}${pct.toFixed(1)}%</span>`;
 }
-
-function barWidth(val, max) {
-  if (!max) return 0;
-  return Math.min(100, Math.round(Math.abs(val)/max*100));
-}
+function barWidth(val,max) { return (!max)?0:Math.min(100,Math.round(Math.abs(val)/max*100)); }
 
 // ══════════════════════════════════════════════
-//  PARSE SUMMARY SHEET (กรุงเทพ / พัทยา)
-//  โครงสร้าง header row: col0=สรุป, col1=รายการ,
-//  col2=เดือน1/2568, col3=เดือน1/2569, col4=เดือน2/2568 ...
-//  กำไรรวม rows 2-17 (row[0]==='กำไรรวม')
-//  สัดส่วนขายออก rows 23-38 (row[0]==='สัดส่วนขายออก')
+//  PARSE SUMMARY SHEET
 // ══════════════════════════════════════════════
 function parseSummarySheet(rows) {
-  // ── หา column mapping จาก header row ──
-  // หา header row (row ที่มี col1 === 'รายการ')
   let headerRow = null;
-  for (const row of rows) {
-    if (row[1] === 'รายการ') { headerRow = row; break; }
-  }
+  for (const row of rows) { if (row[1]==='รายการ') { headerRow=row; break; } }
 
-  // สร้าง map: เดือน1-12 → col index ของ 2568 และ 2569
-  // ใช้ positional เป็นค่าเริ่มต้น (คู่ col 2568/2569 สลับจาก col 2)
-  // หมายเหตุ: รองรับกรณี header พิมพ์ผิด (เช่น เดือน10/2569 แทน เดือน10/2568)
-  const cols68 = [], cols69 = [];
-  for (let m = 0; m < 12; m++) {
-    cols68.push(2 + m*2);
-    cols69.push(3 + m*2);
-  }
+  // positional fallback + header override
+  const cols68=[], cols69=[];
+  for (let m=0;m<12;m++) { cols68.push(2+m*2); cols69.push(3+m*2); }
   if (headerRow) {
-    for (let m = 1; m <= 12; m++) {
-      for (let i = 2; i < headerRow.length; i++) {
-        const h = String(headerRow[i]||'').replace(/\s/g,'');
-        if (h === `เดือน${m}/2568`) cols68[m-1] = i;
-        if (h === `เดือน${m}/2569`) cols69[m-1] = i;
+    for (let m=1;m<=12;m++) {
+      for (let i=2;i<headerRow.length;i++) {
+        const h=String(headerRow[i]||'').replace(/\s/g,'');
+        if (h===`เดือน${m}/2568`) cols68[m-1]=i;
+        if (h===`เดือน${m}/2569`) cols69[m-1]=i;
       }
     }
   }
 
-  const products = [];
+  const products=[];
   for (const row of rows) {
     if (row[0]==='กำไรรวม' && row[1] && row[1]!=='รวมทุกกลุ่ม') {
-      const v68 = cols68.map(c=>c>=0?n(row[c]):null);
-      const v69 = cols69.map(c=>c>=0?n(row[c]):null);
-      products.push({ name:row[1], v68, v69 });
+      const v68=cols68.map(c=>n(row[c]));
+      const v69=cols69.map(c=>n(row[c]));
+      products.push({name:row[1],v68,v69});
     }
   }
-
-  const ratios = [];
+  const ratios=[];
   for (const row of rows) {
     if (row[0]==='สัดส่วนขายออก' && row[1] && row[1]!=='รวมทุกกลุ่ม') {
-      const r68 = cols68.map(c=>c>=0?n(row[c]):null);
-      const r69 = cols69.map(c=>c>=0?n(row[c]):null);
-      ratios.push({ name:row[1], r68, r69 });
+      const r68=cols68.map(c=>n(row[c]));
+      const r69=cols69.map(c=>n(row[c]));
+      ratios.push({name:row[1],r68,r69});
     }
   }
 
-  // ตรวจสอบมีเดือนไหนบ้างใน 2569 (ไม่ใช่ 0 และไม่ใช่ null)
-  const activeMonths69 = [];
+  const activeMonths69=[];
   for (let m=0;m<12;m++) {
-    const total = products.reduce((s,p)=>s+safe(p.v69[m]),0);
-    if (total>0) activeMonths69.push(m);
+    if (products.reduce((s,p)=>s+safe(p.v69[m]),0)>0) activeMonths69.push(m);
   }
-  const nMonths69 = activeMonths69.length || 1;
-  const nMonths68_eq = nMonths69; // เปรียบเทียบ 2568 เฉพาะ nMonths69 เดือนแรก
+  const nM = activeMonths69.length||1;
 
-  // คำนวณต่อ product
   for (const p of products) {
     p.sum68_full = p.v68.reduce((s,v)=>s+safe(v),0);
-    p.sum68_5m   = p.v68.slice(0,nMonths69).reduce((s,v)=>s+safe(v),0);
-    p.sum69_5m   = p.v69.slice(0,nMonths69).reduce((s,v)=>s+safe(v),0);
-    p.diff_bath  = p.sum69_5m - p.sum68_5m;
-    p.diff_pct   = p.sum68_5m ? (p.diff_bath/p.sum68_5m*100) : null;
+    p.sum68_nm   = p.v68.slice(0,nM).reduce((s,v)=>s+safe(v),0);
+    p.sum69_nm   = p.v69.slice(0,nM).reduce((s,v)=>s+safe(v),0);
+    p.diff_bath  = p.sum69_nm - p.sum68_nm;
+    p.diff_pct   = p.sum68_nm ? (p.diff_bath/p.sum68_nm*100) : null;
   }
-
-  // สัดส่วน: เฉลี่ย nMonths69 เดือนแรก
   for (const r of ratios) {
-    const r68vals = r.r68.slice(0,nMonths69).filter(v=>v!==null);
-    const r69vals = r.r69.slice(0,nMonths69).filter(v=>v!==null&&v>0);
-    r.avg68 = r68vals.length ? r68vals.reduce((a,b)=>a+b,0)/r68vals.length : 0;
-    r.avg69 = r69vals.length ? r69vals.reduce((a,b)=>a+b,0)/r69vals.length : 0;
+    const r68v=r.r68.slice(0,nM).filter(v=>v!==null);
+    const r69v=r.r69.slice(0,nM).filter(v=>v!==null&&v>0);
+    r.avg68=r68v.length?r68v.reduce((a,b)=>a+b,0)/r68v.length:0;
+    r.avg69=r69v.length?r69v.reduce((a,b)=>a+b,0)/r69v.length:0;
   }
 
   const total68_full = products.reduce((s,p)=>s+p.sum68_full,0);
-  const total68_5m   = products.reduce((s,p)=>s+p.sum68_5m,0);
-  const total69_5m   = products.reduce((s,p)=>s+p.sum69_5m,0);
-  const diff_bath    = total69_5m - total68_5m;
-  const diff_pct     = total68_5m ? (diff_bath/total68_5m*100) : 0;
+  const total68_nm   = products.reduce((s,p)=>s+p.sum68_nm,0);
+  const total69_nm   = products.reduce((s,p)=>s+p.sum69_nm,0);
+  const diff_bath    = total69_nm-total68_nm;
+  const diff_pct     = total68_nm?(diff_bath/total68_nm*100):0;
 
-  // รายเดือน (กำไรรวม)
-  const monthly = [];
+  const monthly=[];
   for (let m=0;m<12;m++) {
     monthly.push({
       m,
-      s68: products.reduce((s,p)=>s+safe(p.v68[m]),0),
-      s69: products.reduce((s,p)=>s+safe(p.v69[m]),0),
+      s68:products.reduce((s,p)=>s+safe(p.v68[m]),0),
+      s69:products.reduce((s,p)=>s+safe(p.v69[m]),0),
     });
   }
 
-  return { products, ratios, total68_full, total68_5m, total69_5m, diff_bath, diff_pct, monthly, nMonths69, activeMonths69 };
+  return {products,ratios,total68_full,total68_nm,total69_nm,diff_bath,diff_pct,monthly,nM,activeMonths69};
 }
 
 // ══════════════════════════════════════════════
-//  RENDER PAGE 1/2  (ภาพรวม)
+//  RENDER PAGE 1/2
 // ══════════════════════════════════════════════
 function renderOverview(data, contentId, subId, city) {
-  const { products, ratios, total68_full, total68_5m, total69_5m, diff_bath, diff_pct, monthly, nMonths69 } = data;
-  const mLabel = nMonths69<=5 ? `${nMonths69} เดือนแรก` : `${nMonths69} เดือน`;
+  const {products,ratios,total68_full,total68_nm,total69_nm,diff_bath,diff_pct,monthly,nM} = data;
+  const mLabel = `${nM} เดือนแรก`;
+  const mEnd   = MONTHS_TH[nM-1];
 
   document.getElementById(subId).textContent =
-    `ปี 2568 = เต็มปี (ม.ค.–ธ.ค.) · ปี 2569 = ม.ค.–${MONTHS_TH[nMonths69-1]} เท่านั้น · หน่วย: บาท · โหลดล่าสุด ${new Date().toLocaleTimeString('th-TH')}`;
+    `ปี 2568 = เต็มปี (ม.ค.–ธ.ค.) · ปี 2569 = ม.ค.–${mEnd} เท่านั้น · หน่วย: บาท · โหลดล่าสุด ${new Date().toLocaleTimeString('th-TH')}`;
 
   const diffClass = diff_pct>=0?'c-green':'c-red';
-  const diffSign  = diff_pct>=0?'+':'';
-  const diffBathSign = diff_bath>=0?'+':'';
 
-  // ── 5 กล่อง ──
+  // ── CARDS ──
   const cards = `
   <div class="sec-title">📦 สรุปภาพรวม</div>
   <div class="cards">
@@ -363,163 +343,340 @@ function renderOverview(data, contentId, subId, city) {
     </div>
     <div class="card">
       <div class="card-label">กำไรรวม 2568<br>(${mLabel})</div>
-      <div class="card-value c-68">${fmt(total68_5m)}</div>
-      <div class="card-sub">ม.ค.–${MONTHS_TH[nMonths69-1]} 2568</div>
+      <div class="card-value c-68">${fmt(total68_nm)}</div>
+      <div class="card-sub">ม.ค.–${mEnd} 2568</div>
     </div>
     <div class="card">
       <div class="card-label">กำไรรวม 2569<br>(${mLabel})</div>
-      <div class="card-value c-69">${fmt(total69_5m)}</div>
-      <div class="card-sub">ม.ค.–${MONTHS_TH[nMonths69-1]} 2569</div>
+      <div class="card-value c-69">${fmt(total69_nm)}</div>
+      <div class="card-sub">ม.ค.–${mEnd} 2569</div>
     </div>
     <div class="card">
-      <div class="card-label">±บาท<br>2569 vs 2568 (${mLabel})</div>
-      <div class="card-value ${diffClass}">${diffBathSign}${fmt(diff_bath)}</div>
+      <div class="card-label">±บาท 2569 vs 2568<br>(${mLabel})</div>
+      <div class="card-value ${diffClass}">${diff_bath>=0?'+':''}${fmt(diff_bath)}</div>
       <div class="card-sub">เปลี่ยนแปลงสุทธิ</div>
     </div>
     <div class="card">
-      <div class="card-label">±%<br>2569 vs 2568 (${mLabel})</div>
-      <div class="card-value ${diffClass}">${diffSign}${diff_pct.toFixed(2)}%</div>
+      <div class="card-label">±% 2569 vs 2568<br>(${mLabel})</div>
+      <div class="card-value ${diffClass}">${diff_pct>=0?'+':''}${diff_pct.toFixed(2)}%</div>
       <div class="card-sub">อัตราการเติบโต</div>
     </div>
   </div>`;
 
-  // ── ตารางรายกลุ่ม (5 เดือน) ──
-  const maxRatio = Math.max(...ratios.map(r=>Math.max(r.avg68,r.avg69)));
-  let tRows = '';
+  // ── TABLE 1: รายกลุ่ม สรุป nM เดือน ──
+  const maxRatio = Math.max(...ratios.map(r=>Math.max(r.avg68,r.avg69)),1);
+  const totalR68 = ratios.reduce((s,r)=>s+r.avg68,0);
+  const totalR69 = ratios.reduce((s,r)=>s+r.avg69,0);
+  let tRows='';
   for (const p of products) {
-    const r = ratios.find(x=>x.name===p.name) || {avg68:0,avg69:0};
-    const bw68 = barWidth(r.avg68, maxRatio);
-    const bw69 = barWidth(r.avg69, maxRatio);
-    tRows += `<tr>
+    const r=ratios.find(x=>x.name===p.name)||{avg68:0,avg69:0};
+    tRows+=`<tr>
       <td class="L">${p.name}</td>
-      <td>${fmt(p.sum68_5m)}</td>
-      <td><div class="bw"><div class="bb"><div class="f68" style="width:${bw68}%"></div></div><span class="bv">${r.avg68.toFixed(2)}%</span></div></td>
-      <td>${fmt(p.sum69_5m)}</td>
-      <td><div class="bw"><div class="bb"><div class="f69" style="width:${bw69}%"></div></div><span class="bv">${r.avg69.toFixed(2)}%</span></div></td>
+      <td>${fmt(p.sum68_nm)}</td>
+      <td><div class="bw"><div class="bb"><div class="f68" style="width:${barWidth(r.avg68,maxRatio)}%"></div></div><span class="bv">${r.avg68.toFixed(2)}%</span></div></td>
+      <td>${fmt(p.sum69_nm)}</td>
+      <td><div class="bw"><div class="bb"><div class="f69" style="width:${barWidth(r.avg69,maxRatio)}%"></div></div><span class="bv">${r.avg69.toFixed(2)}%</span></div></td>
       <td>${pctBadge(p.diff_pct)}</td>
     </tr>`;
   }
-  // total ratio
-  const totalR68 = ratios.reduce((s,r)=>s+r.avg68,0);
-  const totalR69 = ratios.reduce((s,r)=>s+r.avg69,0);
-
-  const tableGroup = `
-  <div class="sec-title">🏙️ กำไรรายกลุ่ม + สัดส่วน · ${city} (เปรียบเทียบ ${mLabel})</div>
-  <div class="note">📌 สัดส่วนดึงจากตาราง "สัดส่วนขายออก" ในไฟล์โดยตรง เฉลี่ยจาก ${nMonths69} เดือน — รวมสัดส่วนทุกกลุ่ม 2568 = ${totalR68.toFixed(2)}% / 2569 = ${totalR69.toFixed(2)}% (ไม่ถึง 100% เพราะมีสินค้านอกกลุ่มด้วย)</div>
+  const tableGroup=`
+  <div class="sec-title">🏙️ กำไรรายกลุ่ม · ${city} (เปรียบเทียบ ${mLabel})</div>
+  <div class="note">📌 สัดส่วนดึงจากตาราง "สัดส่วนขายออก" เฉลี่ย ${nM} เดือน — รวม 2568 = ${totalR68.toFixed(2)}% / 2569 = ${totalR69.toFixed(2)}%</div>
   <div class="leg">
     <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c68)"></span>ปี 2568</div>
     <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c69)"></span>ปี 2569</div>
   </div>
-  <div class="box">
-    <table>
-      <thead><tr>
-        <th class="L">กลุ่มสินค้า</th>
-        <th>กำไร 2568 (${mLabel}) บ.</th>
-        <th>สัดส่วน 2568 (%)</th>
-        <th>กำไร 2569 (${mLabel}) บ.</th>
-        <th>สัดส่วน 2569 (%)</th>
-        <th>±%</th>
-      </tr></thead>
-      <tbody>${tRows}
-        <tr class="tot">
-          <td class="L">รวมทุกกลุ่ม</td>
-          <td>${fmt(total68_5m)}</td>
-          <td><span class="bv" style="color:var(--muted)">${totalR68.toFixed(2)}%</span></td>
-          <td>${fmt(total69_5m)}</td>
-          <td><span class="bv" style="color:var(--muted)">${totalR69.toFixed(2)}%</span></td>
-          <td>${pctBadge(diff_pct)}</td>
-        </tr>
-      </tbody>
+  <div class="box"><table>
+    <thead><tr>
+      <th class="L">กลุ่มสินค้า</th>
+      <th>กำไร 2568 (${mLabel}) บ.</th><th>สัดส่วน 2568 (%)</th>
+      <th>กำไร 2569 (${mLabel}) บ.</th><th>สัดส่วน 2569 (%)</th>
+      <th>±%</th>
+    </tr></thead>
+    <tbody>${tRows}
+      <tr class="tot">
+        <td class="L">รวมทุกกลุ่ม</td>
+        <td>${fmt(total68_nm)}</td><td><span class="bv" style="color:var(--muted)">${totalR68.toFixed(2)}%</span></td>
+        <td>${fmt(total69_nm)}</td><td><span class="bv" style="color:var(--muted)">${totalR69.toFixed(2)}%</span></td>
+        <td>${pctBadge(diff_pct)}</td>
+      </tr>
+    </tbody>
+  </table></div>`;
+
+  // ── TABLE 2: กลุ่ม × เดือน (รวม nM เดือน เทียบ 2 ปี) ──
+  let t2rows='';
+  for (const p of products) {
+    const diff = p.sum69_nm - p.sum68_nm;
+    const pct  = p.sum68_nm ? diff/p.sum68_nm*100 : null;
+    t2rows+=`<tr>
+      <td class="L">${p.name}</td>
+      <td class="yr68">${fmt(p.sum68_nm)}</td>
+      <td class="yr69">${fmt(p.sum69_nm)}</td>
+      <td>${diff>=0?'+':''}${fmt(diff)}</td>
+      <td>${pctBadge(pct)}</td>
+    </tr>`;
+  }
+  const total_diff = total69_nm - total68_nm;
+  const tableSum=`
+  <div class="sec-title">📊 กำไรรายกลุ่ม รวม ${mLabel} เปรียบเทียบ 2 ปี</div>
+  <div class="box"><table>
+    <thead><tr>
+      <th class="L">กลุ่มสินค้า</th>
+      <th style="color:var(--c68)">กำไรรวม 2568 (บ.)</th>
+      <th style="color:var(--c69)">กำไรรวม 2569 (บ.)</th>
+      <th>±บาท</th><th>±%</th>
+    </tr></thead>
+    <tbody>${t2rows}
+      <tr class="tot">
+        <td class="L">รวมทุกกลุ่ม</td>
+        <td>${fmt(total68_nm)}</td><td>${fmt(total69_nm)}</td>
+        <td>${total_diff>=0?'+':''}${fmt(total_diff)}</td>
+        <td>${pctBadge(diff_pct)}</td>
+      </tr>
+    </tbody>
+  </table></div>`;
+
+  // ── TABLE 3: กลุ่ม × เดือน 1-12 (cross table) ──
+  // แถวกลุ่ม col = เดือน, มี 2 sub-row ต่อกลุ่ม (2568 / 2569)
+  let thMonths='<th class="L">กลุ่มสินค้า</th><th>ปี</th>';
+  for (let m=0;m<12;m++) thMonths+=`<th>${MONTHS_TH[m]}</th>`;
+  thMonths+='<th>รวม</th>';
+
+  let t3rows='';
+  for (const p of products) {
+    // แถว 2568
+    let cells68='';
+    for (let m=0;m<12;m++) {
+      const v=safe(p.v68[m]);
+      cells68+=`<td class="yr68">${v?fmt(v):'<span class="blank">—</span>'}</td>`;
+    }
+    // แถว 2569
+    let cells69='';
+    for (let m=0;m<12;m++) {
+      const v=safe(p.v69[m]);
+      const has = m < nM;
+      cells69+=has?`<td class="yr69">${v?fmt(v):'<span class="blank">—</span>'}</td>`
+                  :`<td class="blank">—</td>`;
+    }
+    t3rows+=`
+      <tr>
+        <td class="grp" rowspan="2">${p.name}</td>
+        <td style="color:var(--c68);font-weight:600;font-size:.65rem">2568</td>
+        ${cells68}
+        <td class="yr68" style="font-weight:700">${fmt(p.sum68_full)}</td>
+      </tr>
+      <tr>
+        <td style="color:var(--c69);font-weight:600;font-size:.65rem">2569</td>
+        ${cells69}
+        <td class="yr69" style="font-weight:700">${fmt(p.sum69_nm)}</td>
+      </tr>`;
+  }
+  // total row
+  let tot68cells='', tot69cells='';
+  for (let m=0;m<12;m++) {
+    const s68=products.reduce((s,p)=>s+safe(p.v68[m]),0);
+    const s69=products.reduce((s,p)=>s+safe(p.v69[m]),0);
+    tot68cells+=`<td style="font-weight:700">${fmt(s68)}</td>`;
+    tot69cells+=m<nM?`<td style="font-weight:700;color:var(--c69)">${fmt(s69)}</td>`:`<td class="blank">—</td>`;
+  }
+  t3rows+=`
+    <tr class="tot-row">
+      <td class="grp" style="font-family:var(--font);font-weight:700" rowspan="2">รวมทุกกลุ่ม</td>
+      <td style="color:var(--c68);font-weight:700;font-size:.65rem">2568</td>
+      ${tot68cells}<td style="font-weight:700">${fmt(total68_full)}</td>
+    </tr>
+    <tr class="tot-row">
+      <td style="color:var(--c69);font-weight:700;font-size:.65rem">2569</td>
+      ${tot69cells}<td style="font-weight:700;color:var(--c69)">${fmt(total69_nm)}</td>
+    </tr>`;
+
+  const tableCross=`
+  <div class="sec-title">📅 กำไรรายกลุ่ม × รายเดือน (2568 เต็มปี · 2569 ม.ค.–${mEnd})</div>
+  <div class="leg">
+    <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c68)"></span>ปี 2568</div>
+    <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c69)"></span>ปี 2569</div>
+  </div>
+  <div class="box" style="overflow-x:auto">
+    <table class="tbl-cross">
+      <thead><tr>${thMonths}</tr></thead>
+      <tbody>${t3rows}</tbody>
     </table>
   </div>`;
 
-  // ── ตารางรายเดือน ──
-  const maxMonthly = Math.max(...monthly.map(m=>Math.max(m.s68,m.s69)));
-  let mRows = '';
+  // ── BAR CHART + ตารางรายเดือนรวม ──
+  const maxM = Math.max(...monthly.map(m=>Math.max(m.s68,m.s69)),1);
+  let chartCols='';
   for (const m of monthly) {
-    const has69 = m.s69 > 0;
-    const diff = has69 ? m.s69-m.s68 : null;
-    const pct  = (has69 && m.s68) ? (diff/m.s68*100) : null;
-    const bh68 = m.s68 ? Math.round(m.s68/maxMonthly*80) : 0;
-    const bh69 = m.s69 ? Math.round(m.s69/maxMonthly*80) : 0;
-    mRows += `<tr>
-      <td class="L">${MONTHS_TH[m.m]}</td>
-      <td>${fmt(m.s68)}</td>
-      <td>${has69 ? fmt(m.s69) : '<span class="m-blank">—</span>'}</td>
-      <td>${diff!==null ? (diff>=0?'+':'')+fmt(diff) : '<span class="m-blank">—</span>'}</td>
-      <td>${diff!==null ? pctBadge(pct) : '<span class="m-blank">—</span>'}</td>
-    </tr>`;
-  }
-
-  // Bar mini chart
-  let chartCols = '';
-  for (const m of monthly) {
-    const has69 = m.s69 > 0;
-    const bh68 = m.s68 ? Math.round(m.s68/maxMonthly*110) : 0;
-    const bh69 = m.s69 ? Math.round(m.s69/maxMonthly*110) : 0;
-    chartCols += `<div class="chart-col">
+    const h68=m.s68?Math.round(m.s68/maxM*110):0;
+    const h69=m.s69?Math.round(m.s69/maxM*110):0;
+    const has69=m.s69>0;
+    chartCols+=`<div class="chart-col">
       <div class="chart-bars">
-        <div class="bar" style="background:var(--c68);height:${bh68}px" title="2568 ${MONTHS_TH[m.m]}: ${fmt(m.s68)}"></div>
-        <div class="bar" style="background:${has69?'var(--c69)':'var(--border)'};height:${has69?bh69:4}px;opacity:${has69?1:.4}" title="2569 ${MONTHS_TH[m.m]}: ${has69?fmt(m.s69):'ยังไม่มีข้อมูล'}"></div>
+        <div class="bar" style="background:var(--c68);height:${h68}px" title="2568 ${MONTHS_TH[m.m]}: ${fmt(m.s68)}"></div>
+        <div class="bar" style="background:${has69?'var(--c69)':'var(--border)'};height:${has69?h69:4}px;opacity:${has69?1:.4}" title="2569 ${MONTHS_TH[m.m]}: ${has69?fmt(m.s69):'ยังไม่มีข้อมูล'}"></div>
       </div>
       <div class="chart-label">${MONTHS_TH[m.m]}</div>
     </div>`;
   }
-
-  const tableMonthly = `
-  <div class="sec-title">📅 กำไรรายเดือน เปรียบเทียบ 2568 vs 2569</div>
+  let mRows='';
+  for (const m of monthly) {
+    const has69=m.s69>0;
+    const diff=has69?m.s69-m.s68:null;
+    const pct=has69&&m.s68?diff/m.s68*100:null;
+    mRows+=`<tr>
+      <td class="L">${MONTHS_TH[m.m]}</td>
+      <td>${fmt(m.s68)}</td>
+      <td>${has69?fmt(m.s69):'<span class="m-blank">—</span>'}</td>
+      <td>${diff!==null?(diff>=0?'+':'')+fmt(diff):'<span class="m-blank">—</span>'}</td>
+      <td>${diff!==null?pctBadge(pct):'<span class="m-blank">—</span>'}</td>
+    </tr>`;
+  }
+  const tableMonthly=`
+  <div class="sec-title">📈 กำไรรายเดือน รวมทุกกลุ่ม เปรียบเทียบ 2568 vs 2569</div>
   <div class="box">
-    <div class="box-head">📊 Bar Chart รายเดือน <span style="color:var(--muted);font-weight:400;font-size:.75rem">— แถบสีส้ม=2568 · สีน้ำเงิน=2569</span></div>
+    <div class="box-head">📊 Bar Chart <span style="color:var(--muted);font-weight:400;font-size:.75rem">— สีส้ม=2568 · สีน้ำเงิน=2569</span></div>
     <div class="chart-wrap"><div class="chart">${chartCols}</div></div>
   </div>
   <div class="box">
-    <div class="box-head">🗓️ ตารางรายเดือน</div>
+    <div class="box-head">🗓️ ตารางรายเดือน รวมทุกกลุ่ม</div>
     <table class="tbl-month">
-      <thead><tr>
-        <th class="L">เดือน</th>
-        <th>กำไร 2568 (บ.)</th>
-        <th>กำไร 2569 (บ.)</th>
-        <th>±บาท</th>
-        <th>±%</th>
-      </tr></thead>
+      <thead><tr><th class="L">เดือน</th><th>กำไร 2568 (บ.)</th><th>กำไร 2569 (บ.)</th><th>±บาท</th><th>±%</th></tr></thead>
       <tbody>${mRows}</tbody>
     </table>
   </div>`;
 
-  document.getElementById(contentId).innerHTML = cards + tableGroup + tableMonthly;
+  document.getElementById(contentId).innerHTML = cards + tableGroup + tableSum + tableCross + tableMonthly;
 }
 
 // ══════════════════════════════════════════════
-//  PARSE + RENDER DETAIL SHEET (หน้า 3/4)
+//  RENDER PAGE 3/4 (Detail with group filter)
 // ══════════════════════════════════════════════
-function parseDetailSheet(rows) {
-  // ต้องดูก่อนว่าโครงสร้างเป็นอย่างไร
-  return rows;
-}
-
 function renderDetail(rows, contentId, city) {
   if (!rows || rows.length < 2) {
     document.getElementById(contentId).innerHTML = '<div class="err-box">ไม่พบข้อมูล หรือ Sheet ยังไม่เปิด Public</div>';
     return;
   }
-  // แสดงตารางดิบสวยงาม
-  const header = rows[0];
-  let thead = '<tr>' + header.map(h=>`<th class="L">${h||''}</th>`).join('') + '</tr>';
-  let tbody = '';
-  for (let i=1;i<rows.length;i++) {
-    const r = rows[i];
-    if (r.every(c=>!c)) continue;
-    tbody += '<tr>' + r.map((c,ci)=>{
-      const num = n(c);
-      if (ci>0 && num!==null) return `<td>${fmt(num)}</td>`;
-      return `<td class="L">${c||''}</td>`;
-    }).join('') + '</tr>';
+
+  // col mapping: 0=กลุ่ม, 1=เดือน, 2=รหัส, 3=รายละเอียด, 4=หน่วย
+  // 5=ต้นทุน68, 6=ต้นทุน69, 7=จำนวน68, 8=จำนวน69
+  // 10=กำไร68, 11=กำไร69, 12=ขายเฉลี่ย68, 13=ขายเฉลี่ย69
+  const dataRows = rows.slice(1).filter(r => r[0] && r[3]); // skip header, skip blank
+
+  // รวม rows ที่มีรหัสเดียวกันในปีเดียวกัน → แต่ละรหัส+เดือน = 1 แถว
+  // group → month → { รายละเอียด, หน่วย, ต้นทุน68, ต้นทุน69, ราคาขาย68, ราคาขาย69, จำนวน68, กำไร68, จำนวน69, กำไร69 }
+  const grouped = {}; // key = กลุ่ม
+  for (const r of dataRows) {
+    const grp = r[0]||'';
+    const mon = n(r[1])||0;
+    const sku = r[2]||'';
+    const desc = r[3]||'';
+    const unit = r[4]||'';
+    const cost68 = n(r[5]);
+    const cost69 = n(r[6]);
+    const qty68  = n(r[7]);
+    const qty69  = n(r[8]);
+    const profit68 = n(r[10]);
+    const profit69 = n(r[11]);
+    const price68 = n(r[12]);
+    const price69 = n(r[13]);
+
+    if (!grouped[grp]) grouped[grp] = {};
+    const key = `${sku}__${desc}__${unit}`;
+    if (!grouped[grp][key]) grouped[grp][key] = {sku,desc,unit,months:{}};
+    if (!grouped[grp][key].months[mon]) grouped[grp][key].months[mon]={};
+    const m = grouped[grp][key].months[mon];
+    // เก็บข้อมูล (ถ้ามีหลาย row ต่อเดือน ให้รวม qty/profit, เฉลี่ย cost/price)
+    m.cost68  = cost68;
+    m.cost69  = cost69;
+    m.price68 = price68;
+    m.price69 = price69;
+    m.qty68   = (m.qty68||0) + (qty68||0);
+    m.qty69   = (m.qty69||0) + (qty69||0);
+    m.profit68= (m.profit68||0) + (profit68||0);
+    m.profit69= (m.profit69||0) + (profit69||0);
   }
-  document.getElementById(contentId).innerHTML = `
-    <div class="note">📋 ข้อมูลดิบจากชีท "${city}" — ดึงสดจาก Google Sheets</div>
+
+  const allGroups = Object.keys(grouped).sort();
+  let activeGrp = allGroups[0] || '';
+
+  function buildTable(grp) {
+    const items = grouped[grp] || {};
+    const itemKeys = Object.keys(items);
+    if (!itemKeys.length) return '<div class="note">ไม่มีข้อมูลในกลุ่มนี้</div>';
+
+    let tbody = '';
+    for (const key of itemKeys) {
+      const item = items[key];
+      for (let mon = 1; mon <= 12; mon++) {
+        const m = item.months[mon];
+        if (!m && !item.months[mon]) continue;
+        const md = m || {};
+        const has68 = md.qty68 > 0;
+        const has69 = md.qty69 > 0;
+        // แถวข้อมูล
+        tbody += `<tr>
+          <td class="L">${grp}</td>
+          <td style="text-align:center">${MONTHS_TH[mon-1]}</td>
+          <td class="L" style="font-size:.7rem;max-width:220px;white-space:normal">${item.desc}</td>
+          <td class="L" style="text-align:center">${item.unit}</td>
+          <td>${md.cost68!=null?fmt2(md.cost68):'<span class="m-blank">—</span>'}</td>
+          <td>${md.cost69!=null?fmt2(md.cost69):'<span class="m-blank">—</span>'}</td>
+          <td>${md.price68!=null?fmt2(md.price68):'<span class="m-blank">—</span>'}</td>
+          <td>${md.price69!=null?fmt2(md.price69):'<span class="m-blank">—</span>'}</td>
+          <td><div class="cell-2row">
+            <div class="row1">${has68?fmt(md.qty68):'<span class="m-blank">—</span>'}</div>
+            <div class="row2 profit">${has68?fmt(md.profit68):'<span class="m-blank"></span>'}</div>
+          </div></td>
+          <td><div class="cell-2row">
+            <div class="row1">${has69?fmt(md.qty69):'<span class="m-blank">—</span>'}</div>
+            <div class="row2 profit" style="color:var(--c69)">${has69?fmt(md.profit69):'<span class="m-blank"></span>'}</div>
+          </div></td>
+        </tr>`;
+      }
+    }
+
+    return `
     <div class="box" style="overflow-x:auto">
-      <table><thead>${thead}</thead><tbody>${tbody}</tbody></table>
+      <div class="box-head">📦 ${grp} · ${city}</div>
+      <table class="tbl-detail">
+        <thead><tr>
+          <th class="L">กลุ่ม</th>
+          <th class="L">เดือน</th>
+          <th class="L">รายละเอียด</th>
+          <th class="L">หน่วย</th>
+          <th>ต้นทุนเฉลี่ย<br>2568</th>
+          <th>ต้นทุนเฉลี่ย<br>2569</th>
+          <th>ราคาขายเฉลี่ย<br>2568</th>
+          <th>ราคาขายเฉลี่ย<br>2569</th>
+          <th>จำนวนขาย 2568<br><span style="font-weight:400;color:var(--green)">กำไร 2568</span></th>
+          <th>จำนวนขาย 2569<br><span style="font-weight:400;color:var(--c69)">กำไร 2569</span></th>
+        </tr></thead>
+        <tbody>${tbody}</tbody>
+      </table>
     </div>`;
+  }
+
+  function render() {
+    document.getElementById(contentId+'-table').innerHTML = buildTable(activeGrp);
+  }
+
+  // สร้าง filter buttons
+  let btns = allGroups.map(g=>
+    `<button class="grp-btn${g===activeGrp?' active':''}" onclick="window.__setGrp_${contentId}('${g}')">${g}</button>`
+  ).join('');
+
+  document.getElementById(contentId).innerHTML = `
+    <div class="note">📌 เลือกกลุ่มสินค้าที่ต้องการดู — จำนวน (บน) / กำไร (ล่าง)</div>
+    <div class="grp-filter" id="${contentId}-btns">${btns}</div>
+    <div id="${contentId}-table">${buildTable(activeGrp)}</div>`;
+
+  window[`__setGrp_${contentId}`] = function(g) {
+    activeGrp = g;
+    document.querySelectorAll(`#${contentId}-btns .grp-btn`).forEach(b=>{
+      b.classList.toggle('active', b.textContent===g);
+    });
+    document.getElementById(contentId+'-table').innerHTML = buildTable(activeGrp);
+  };
 }
 
 // ══════════════════════════════════════════════
@@ -531,57 +688,30 @@ async function loadData(force=false) {
   if (!force && dataCache) return;
   document.getElementById('btn-refresh').textContent = '⟳ กำลังโหลด...';
   document.getElementById('btn-refresh').disabled = true;
-
   try {
-    // ดึง 4 sheets พร้อมกัน
-    const [bkkRows, pttRows] = await Promise.all([
+    const [bkkRows, pttRows, bkkDetailRows, pttDetailRows] = await Promise.all([
       fetchSheet(GIDS.bkk),
       fetchSheet(GIDS.ptt),
+      fetchSheet(GIDS.bkkDetail),
+      fetchSheet(GIDS.pttDetail),
     ]);
-
-    const bkkData = parseSummarySheet(bkkRows);
-    const pttData = parseSummarySheet(pttRows);
-
-    renderOverview(bkkData, 'bkk-content', 'bkk-sub', 'กรุงเทพ');
-    renderOverview(pttData, 'ptt-content', 'ptt-sub', 'พัทยา');
-
-    dataCache = { bkkData, pttData };
-
-    // ดึง detail sheets (อาจ fail ถ้า gid ผิด — ไม่ block main)
-    loadDetailSheets();
-
+    renderOverview(parseSummarySheet(bkkRows), 'bkk-content', 'bkk-sub', 'กรุงเทพ');
+    renderOverview(parseSummarySheet(pttRows), 'ptt-content', 'ptt-sub', 'พัทยา');
+    renderDetail(bkkDetailRows, 'bkk-detail-content', 'กรุงเทพ');
+    renderDetail(pttDetailRows, 'ptt-detail-content', 'พัทยา');
+    dataCache = true;
   } catch(e) {
     console.error(e);
     const errHtml = `<div class="err-box">⚠️ โหลดข้อมูลไม่ได้: ${e.message}<br>ตรวจสอบว่า Google Sheet ตั้งค่า "เผยแพร่สู่สาธารณะ" แล้ว</div>`;
-    document.getElementById('bkk-content').innerHTML = errHtml;
-    document.getElementById('ptt-content').innerHTML = errHtml;
+    ['bkk-content','ptt-content','bkk-detail-content','ptt-detail-content'].forEach(id=>{
+      document.getElementById(id).innerHTML = errHtml;
+    });
   } finally {
     document.getElementById('btn-refresh').textContent = '↺ รีเฟรช';
     document.getElementById('btn-refresh').disabled = false;
   }
 }
 
-async function loadDetailSheets() {
-  // หา gid ของชีทอื่นจาก spreadsheet (ลองดึง sheet list)
-  try {
-    // ลองดึง gid จาก export ปกติ (default sheet = gid=0)
-    // แต่เราไม่รู้ gid จริง — ลองใช้ชื่อชีทแทนไม่ได้ใน CSV export
-    // ใช้วิธี: fetch gid=0 = sheet แรก, gid ที่ให้มาคือกรุงเทพ
-    // สำหรับ detail: ใส่ไว้เป็น placeholder ก่อน จะอัปเดตได้ง่าย
-    const urls = [
-      { id:'bkk-detail-content', gid: GIDS.bkkDetail, city:'รายละเอียดกรุงเทพ' },
-      { id:'ptt-detail-content', gid: GIDS.pttDetail, city:'รายละเอียดพัทยา' },
-    ];
-    for (const u of urls) {
-      fetchSheet(u.gid).then(rows=>renderDetail(rows, u.id, u.city)).catch(e=>{
-        document.getElementById(u.id).innerHTML =
-          `<div class="err-box">⚠️ โหลด Sheet "${u.city}" ไม่ได้<br>กรุณาอัปเดต GID ใน CONFIG (ดูจาก URL ของ Sheet)<br>Error: ${e.message}</div>`;
-      });
-    }
-  } catch(e) { console.warn('Detail load error:', e); }
-}
-
-// ── Start ──
 loadData();
 </script>
 </body>
