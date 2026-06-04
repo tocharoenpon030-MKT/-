@@ -318,10 +318,8 @@ function parseSummarySheet(rows) {
     p.diff_pct  =p.sum68_nm?(p.diff_bath/p.sum68_nm*100):null;
   }
   for (const r of ratios) {
-    const a68=r.r68.slice(0,nM).filter(v=>v!==null&&v>0);
-    const a69=r.r69.slice(0,nM).filter(v=>v!==null&&v>0);
-    r.avg68=a68.length?a68.reduce((a,b)=>a+b,0)/a68.length:0;
-    r.avg69=a69.length?a69.reduce((a,b)=>a+b,0)/a69.length:0;
+    r.rsum68_full=r.r68.reduce((s,v)=>s+(v||0),0);
+    r.rsum69_nm =r.r69.slice(0,nM).reduce((s,v)=>s+(v||0),0);
   }
 
   const total68_full=products.reduce((s,p)=>s+p.sum68_full,0);
@@ -384,24 +382,27 @@ function renderOverview(data, contentId, subId, city) {
   </div>`;
 
   // ── TABLE 1: รายกลุ่ม สรุป nM เดือน ──
-  const maxRatio=Math.max(...ratios.map(r=>Math.max(r.avg68,r.avg69)),1);
-  const totalR68=ratios.reduce((s,r)=>s+r.avg68,0);
-  const totalR69=ratios.reduce((s,r)=>s+r.avg69,0);
+  const totalR68=ratios.reduce((s,r)=>s+r.rsum69_nm,0);
+  const totalR69=ratios.reduce((s,r)=>s+r.rsum69_nm,0);
+  const maxRatio=Math.max(...ratios.map(r=>Math.max(r.rsum68_full,r.rsum69_nm)),1);
+  const tR68nm=ratios.reduce((s,r)=>s+r.r68.slice(0,nM).reduce((a,v)=>a+(v||0),0),0);
+  const tR69nm=ratios.reduce((s,r)=>s+r.rsum69_nm,0);
   let tRows='';
   for (const p of products) {
-    const r=ratios.find(x=>x.name===p.name)||{avg68:0,avg69:0};
+    const r=ratios.find(x=>x.name===p.name)||{rsum68_full:0,rsum69_nm:0,r68:Array(12).fill(0)};
+    const rs68nm=r.r68.slice(0,nM).reduce((s,v)=>s+(v||0),0);
     tRows+=`<tr>
       <td class="L">${p.name}</td>
       <td>${fmt(p.sum68_nm)}</td>
-      <td><div class="bw"><div class="bb"><div class="f68" style="width:${barWidth(r.avg68,maxRatio)}%"></div></div><span class="bv">${r.avg68.toFixed(2)}%</span></div></td>
+      <td><div class="bw"><div class="bb"><div class="f68" style="width:${barWidth(rs68nm,maxRatio)}%"></div></div><span class="bv">${rs68nm.toFixed(2)}%</span></div></td>
       <td>${fmt(p.sum69_nm)}</td>
-      <td><div class="bw"><div class="bb"><div class="f69" style="width:${barWidth(r.avg69,maxRatio)}%"></div></div><span class="bv">${r.avg69.toFixed(2)}%</span></div></td>
+      <td><div class="bw"><div class="bb"><div class="f69" style="width:${barWidth(r.rsum69_nm,maxRatio)}%"></div></div><span class="bv">${r.rsum69_nm.toFixed(2)}%</span></div></td>
       <td>${pctBadge(p.diff_pct)}</td>
     </tr>`;
   }
   const tableGroup=`
   <div class="sec-title">🏙️ กำไรรายกลุ่ม · ${city} (เปรียบเทียบ ${nM} เดือน)</div>
-  <div class="note">📌 สัดส่วนเฉลี่ย ${nM} เดือน — รวม 2568 = ${totalR68.toFixed(2)}% / 2569 = ${totalR69.toFixed(2)}%</div>
+  <div class="note">📌 สัดส่วนรวม ${nM} เดือน — รวม 2568 = ${tR68nm.toFixed(2)}% / 2569 = ${tR69nm.toFixed(2)}%</div>
   <div class="leg">
     <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c68)"></span>ปี 2568</div>
     <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c69)"></span>ปี 2569</div>
@@ -479,16 +480,18 @@ function renderOverview(data, contentId, subId, city) {
 
   let t3rows='';
   for (const p of products) {
-    const r=ratios.find(x=>x.name===p.name)||{r68:Array(12).fill(null),r69:Array(12).fill(null),avg68:null,avg69:null};
+    const r=ratios.find(x=>x.name===p.name)||{r68:Array(12).fill(null),r69:Array(12).fill(null),rsum68_full:0,rsum69_nm:0};
     let cells='';
     for (let m=0;m<12;m++) {
       cells+=cellP(p.v68[m], r.r68[m], 68);
       cells+=m<nM ? cellP(p.v69[m], r.r69[m], 69) : `<td style="background:#eff6ff;color:#bbb;text-align:center;font-size:.7rem">—</td>`;
     }
-    // คอลัมน์รวม: 2568=เต็มปี, 2569=nM เดือน
-    const avgFull68=r.r68.filter(v=>v).reduce((a,b)=>a+b,0)/(r.r68.filter(v=>v).length||1);
-    cells+=cellP(p.sum68_full, avgFull68, 68);
-    cells+=cellP(p.sum69_nm, r.avg69||null, 69);
+    // คอลัมน์รวม: 2568=เต็มปี+rsum68_full, 2569=nM เดือน+rsum69_nm+±
+    const db=p.sum69_nm-p.sum68_nm; const dp=p.sum68_nm?(db/p.sum68_nm*100):null;
+    const updn68='';
+    const updn69=db!==null?`<br><span style="font-size:.6rem;color:${db>=0?'#059669':'#dc2626'}">${db>=0?'▲+':'▼'}${fmt(db)}</span><br><span style="font-size:.6rem;color:${db>=0?'#059669':'#dc2626'}">${dp!=null?(dp>=0?'▲+':'▼')+dp.toFixed(1)+'%':''}</span>`:'';
+    cells+=`<td style="background:#fff7ed;color:var(--c68);text-align:right;font-family:var(--mono);font-size:.72rem;line-height:1.5">${fmt(p.sum68_full)}<br><span style="font-size:.6rem;color:#92400e">${r.rsum68_full.toFixed(2)}%</span></td>`;
+    cells+=`<td style="background:#eff6ff;color:var(--c69);text-align:right;font-family:var(--mono);font-size:.72rem;line-height:1.5">${fmt(p.sum69_nm)}<br><span style="font-size:.6rem;color:#1e40af">${r.rsum69_nm.toFixed(2)}%</span>${updn69}</td>`;
     t3rows+=`<tr><td class="grp">${p.name}</td>${cells}</tr>`;
   }
   // total row
@@ -500,8 +503,10 @@ function renderOverview(data, contentId, subId, city) {
     totCells+=s69!=null?`<td style="background:#eff6ff;color:var(--c69);text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700">${fmt(s69)}</td>`
                        :`<td style="background:#eff6ff;color:#bbb;text-align:center;font-size:.7rem">—</td>`;
   }
-  totCells+=`<td style="background:#fff7ed;color:var(--c68);text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700">${fmt(total68_full)}</td>`;
-  totCells+=`<td style="background:#eff6ff;color:var(--c69);text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700">${fmt(total69_nm)}</td>`;
+  const tRsum68=ratios.reduce((s,r)=>s+r.rsum68_full,0);
+  const tRsum69=ratios.reduce((s,r)=>s+r.rsum69_nm,0);
+  totCells+=`<td style="background:#fff7ed;color:var(--c68);text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700">${fmt(total68_full)}<br><span style="font-size:.6rem;color:#92400e">${tRsum68.toFixed(2)}%</span></td>`;
+  totCells+=`<td style="background:#eff6ff;color:var(--c69);text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700">${fmt(total69_nm)}<br><span style="font-size:.6rem;color:#1e40af">${tRsum69.toFixed(2)}%</span></td>`;
   t3rows+=`<tr class="tot-row"><td class="grp" style="font-weight:700">รวมทุกกลุ่ม</td>${totCells}</tr>`;
 
   const tableCross=`
@@ -509,7 +514,7 @@ function renderOverview(data, contentId, subId, city) {
   <div class="leg">
     <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c68)"></span>2568</div>
     <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c69)"></span>2569</div>
-    <span style="font-size:.72rem;color:var(--muted)">· ตัวเลขเล็ก = สัดส่วนขายออก% · รวม = เฉลี่ยสัดส่วนตลอดช่วง · เดือน 6–12 ของปี 2569 เว้นว่าง</span>
+    <span style="font-size:.72rem;color:var(--muted)">· ตัวเลขเล็ก = สัดส่วนขายออก% · รวม = ผลรวมสัดส่วนทั้งช่วง · เดือน 6–12 ของปี 2569 เว้นว่าง</span>
   </div>
   <div class="box" style="overflow-x:auto">
     <table class="tbl-cross">
