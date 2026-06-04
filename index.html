@@ -254,93 +254,106 @@ function barWidth(val,max) { return (!max)?0:Math.min(100,Math.round(Math.abs(va
 //  PARSE SUMMARY SHEET
 // ══════════════════════════════════════════════
 function parseSummarySheet(rows) {
-  let headerRow = null;
-  for (const row of rows) { if (row[1]==='รายการ') { headerRow=row; break; } }
+  // หา header row ของแต่ละ section โดย col0=keyword, col1 มี 'เดือน'
+  let pHdr=null, rHdr=null, pStart=-1, rStart=-1;
+  for (let i=0;i<rows.length;i++) {
+    const c0=String(rows[i][0]||'').trim();
+    const c1=String(rows[i][1]||'').trim();
+    if (c0==='กำไรรวม'       && c1.includes('เดือน') && !pHdr) { pHdr=rows[i]; pStart=i+1; }
+    if (c0==='สัดส่วนขายออก' && c1.includes('เดือน') && !rHdr) { rHdr=rows[i]; rStart=i+1; }
+  }
 
-  // positional fallback + header override
-  const cols68=[], cols69=[];
-  for (let m=0;m<12;m++) { cols68.push(2+m*2); cols69.push(3+m*2); }
-  if (headerRow) {
-    for (let m=1;m<=12;m++) {
-      for (let i=2;i<headerRow.length;i++) {
-        const h=String(headerRow[i]||'').replace(/\s/g,'');
-        if (h===`เดือน${m}/2568`) cols68[m-1]=i;
-        if (h===`เดือน${m}/2569`) cols69[m-1]=i;
+  // build col index: col A=ชื่อ, B=เดือน1/2568, C=เดือน1/2569, D=เดือน2/2568, ...
+  function buildIdx(hdr) {
+    const c68=[], c69=[];
+    for (let m=0;m<12;m++) { c68.push(1+m*2); c69.push(2+m*2); }
+    if (hdr) {
+      for (let i=1;i<hdr.length;i++) {
+        const h=String(hdr[i]||'').trim();
+        for (let m=1;m<=12;m++) {
+          if (h===`เดือน${m}/2568`) c68[m-1]=i;
+          if (h===`เดือน${m}/2569`) c69[m-1]=i;
+        }
       }
     }
+    return {c68,c69};
   }
 
-  const products=[];
-  for (const row of rows) {
-    if (row[0]==='กำไรรวม' && row[1] && row[1]!=='รวมทุกกลุ่ม') {
-      const v68=cols68.map(c=>n(row[c]));
-      const v69=cols69.map(c=>n(row[c]));
-      products.push({name:row[1],v68,v69});
+  const {c68,c69}        = buildIdx(pHdr);
+  const {c68:r68c,c69:r69c} = buildIdx(rHdr);
+
+  const SKIP=new Set(['รวมทุกกลุ่ม','เปลี่ยนแปลง(%)','เปลี่ยนแปลง(บาท)','']);
+  const products=[], ratios=[];
+
+  // parse กำไรรวม (หยุดเมื่อเจอ section ถัดไป)
+  if (pStart>0) {
+    for (let i=pStart;i<rows.length;i++) {
+      const c0=String(rows[i][0]||'').trim();
+      if (c0==='สัดส่วนขายออก') break;
+      if (!c0||SKIP.has(c0)) continue;
+      products.push({name:c0, v68:c68.map(c=>n(rows[i][c])), v69:c69.map(c=>n(rows[i][c]))});
     }
   }
-  const ratios=[];
-  for (const row of rows) {
-    if (row[0]==='สัดส่วนขายออก' && row[1] && row[1]!=='รวมทุกกลุ่ม') {
-      const r68=cols68.map(c=>n(row[c]));
-      const r69=cols69.map(c=>n(row[c]));
-      ratios.push({name:row[1],r68,r69,
-        avg68:0, avg69:0});
+  // parse สัดส่วนขายออก
+  if (rStart>0) {
+    for (let i=rStart;i<rows.length;i++) {
+      const c0=String(rows[i][0]||'').trim();
+      if (!c0||SKIP.has(c0)) continue;
+      ratios.push({name:c0, r68:r68c.map(c=>n(rows[i][c])), r69:r69c.map(c=>n(rows[i][c]))});
     }
   }
 
-  const activeMonths69=[];
+  // นับเดือนที่มีข้อมูล 2569 ต่อเนื่องจากเดือน 1
+  let nM=0;
   for (let m=0;m<12;m++) {
-    if (products.reduce((s,p)=>s+safe(p.v69[m]),0)>0) activeMonths69.push(m);
+    if (products.reduce((s,p)=>s+safe(p.v69[m]),0)>0) nM=m+1; else break;
   }
-  const nM = activeMonths69.length||1;
+  nM=nM||1;
 
   for (const p of products) {
-    p.sum68_full = p.v68.reduce((s,v)=>s+safe(v),0);
-    p.sum68_nm   = p.v68.slice(0,nM).reduce((s,v)=>s+safe(v),0);
-    p.sum69_nm   = p.v69.slice(0,nM).reduce((s,v)=>s+safe(v),0);
-    p.diff_bath  = p.sum69_nm - p.sum68_nm;
-    p.diff_pct   = p.sum68_nm ? (p.diff_bath/p.sum68_nm*100) : null;
+    p.sum68_full=p.v68.reduce((s,v)=>s+safe(v),0);
+    p.sum68_nm  =p.v68.slice(0,nM).reduce((s,v)=>s+safe(v),0);
+    p.sum69_nm  =p.v69.slice(0,nM).reduce((s,v)=>s+safe(v),0);
+    p.diff_bath =p.sum69_nm-p.sum68_nm;
+    p.diff_pct  =p.sum68_nm?(p.diff_bath/p.sum68_nm*100):null;
   }
   for (const r of ratios) {
-    const r68v=r.r68.slice(0,nM).filter(v=>v!==null);
-    const r69v=r.r69.slice(0,nM).filter(v=>v!==null&&v>0);
-    r.avg68=r68v.length?r68v.reduce((a,b)=>a+b,0)/r68v.length:0;
-    r.avg69=r69v.length?r69v.reduce((a,b)=>a+b,0)/r69v.length:0;
+    const a68=r.r68.slice(0,nM).filter(v=>v!==null&&v>0);
+    const a69=r.r69.slice(0,nM).filter(v=>v!==null&&v>0);
+    r.avg68=a68.length?a68.reduce((a,b)=>a+b,0)/a68.length:0;
+    r.avg69=a69.length?a69.reduce((a,b)=>a+b,0)/a69.length:0;
   }
 
-  const total68_full = products.reduce((s,p)=>s+p.sum68_full,0);
-  const total68_nm   = products.reduce((s,p)=>s+p.sum68_nm,0);
-  const total69_nm   = products.reduce((s,p)=>s+p.sum69_nm,0);
-  const diff_bath    = total69_nm-total68_nm;
-  const diff_pct     = total68_nm?(diff_bath/total68_nm*100):0;
+  const total68_full=products.reduce((s,p)=>s+p.sum68_full,0);
+  const total68_nm  =products.reduce((s,p)=>s+p.sum68_nm,0);
+  const total69_nm  =products.reduce((s,p)=>s+p.sum69_nm,0);
+  const diff_bath   =total69_nm-total68_nm;
+  const diff_pct    =total68_nm?(diff_bath/total68_nm*100):0;
 
   const monthly=[];
   for (let m=0;m<12;m++) {
-    monthly.push({
-      m,
+    monthly.push({m,
       s68:products.reduce((s,p)=>s+safe(p.v68[m]),0),
       s69:products.reduce((s,p)=>s+safe(p.v69[m]),0),
     });
   }
 
-  return {products,ratios,total68_full,total68_nm,total69_nm,diff_bath,diff_pct,monthly,nM,activeMonths69};
+  return {products,ratios,total68_full,total68_nm,total69_nm,diff_bath,diff_pct,monthly,nM};
 }
-
 // ══════════════════════════════════════════════
 //  RENDER PAGE 1/2
 // ══════════════════════════════════════════════
 function renderOverview(data, contentId, subId, city) {
-  const {products,ratios,total68_full,total68_nm,total69_nm,diff_bath,diff_pct,monthly,nM} = data;
-  const mLabel = `${nM} เดือนแรก`;
-  const mEnd   = MONTHS_TH[nM-1];
+  const {products,ratios,total68_full,total68_nm,total69_nm,diff_bath,diff_pct,monthly,nM}=data;
+  const mEnd=MONTHS_TH[nM-1];
 
-  document.getElementById(subId).textContent =
+  document.getElementById(subId).textContent=
     `ปี 2568 = เต็มปี (ม.ค.–ธ.ค.) · ปี 2569 = ม.ค.–${mEnd} เท่านั้น · หน่วย: บาท · โหลดล่าสุด ${new Date().toLocaleTimeString('th-TH')}`;
 
-  const diffClass = diff_pct>=0?'c-green':'c-red';
+  const diffClass=diff_pct>=0?'c-green':'c-red';
 
-  // ── CARDS ──
-  const cards = `
+  // ── 5 CARDS ──
+  const cards=`
   <div class="sec-title">📦 สรุปภาพรวม</div>
   <div class="cards">
     <div class="card">
@@ -349,31 +362,31 @@ function renderOverview(data, contentId, subId, city) {
       <div class="card-sub">12 เดือน</div>
     </div>
     <div class="card">
-      <div class="card-label">กำไรรวม 2568<br>(${mLabel})</div>
+      <div class="card-label">กำไรรวม 2568<br>(${nM} เดือน ม.ค.–${mEnd})</div>
       <div class="card-value c-68">${fmt(total68_nm)}</div>
       <div class="card-sub">ม.ค.–${mEnd} 2568</div>
     </div>
     <div class="card">
-      <div class="card-label">กำไรรวม 2569<br>(${mLabel})</div>
+      <div class="card-label">กำไรรวม 2569<br>(${nM} เดือน ม.ค.–${mEnd})</div>
       <div class="card-value c-69">${fmt(total69_nm)}</div>
       <div class="card-sub">ม.ค.–${mEnd} 2569</div>
     </div>
     <div class="card">
-      <div class="card-label">±บาท 2569 vs 2568<br>(${mLabel})</div>
+      <div class="card-label">±บาท 2569 vs 2568<br>(${nM} เดือน)</div>
       <div class="card-value ${diffClass}">${diff_bath>=0?'+':''}${fmt(diff_bath)}</div>
       <div class="card-sub">เปลี่ยนแปลงสุทธิ</div>
     </div>
     <div class="card">
-      <div class="card-label">±% 2569 vs 2568<br>(${mLabel})</div>
+      <div class="card-label">±% 2569 vs 2568<br>(${nM} เดือน)</div>
       <div class="card-value ${diffClass}">${diff_pct>=0?'+':''}${diff_pct.toFixed(2)}%</div>
       <div class="card-sub">อัตราการเติบโต</div>
     </div>
   </div>`;
 
   // ── TABLE 1: รายกลุ่ม สรุป nM เดือน ──
-  const maxRatio = Math.max(...ratios.map(r=>Math.max(r.avg68,r.avg69)),1);
-  const totalR68 = ratios.reduce((s,r)=>s+r.avg68,0);
-  const totalR69 = ratios.reduce((s,r)=>s+r.avg69,0);
+  const maxRatio=Math.max(...ratios.map(r=>Math.max(r.avg68,r.avg69)),1);
+  const totalR68=ratios.reduce((s,r)=>s+r.avg68,0);
+  const totalR69=ratios.reduce((s,r)=>s+r.avg69,0);
   let tRows='';
   for (const p of products) {
     const r=ratios.find(x=>x.name===p.name)||{avg68:0,avg69:0};
@@ -387,8 +400,8 @@ function renderOverview(data, contentId, subId, city) {
     </tr>`;
   }
   const tableGroup=`
-  <div class="sec-title">🏙️ กำไรรายกลุ่ม · ${city} (เปรียบเทียบ ${mLabel})</div>
-  <div class="note">📌 สัดส่วนดึงจากตาราง "สัดส่วนขายออก" เฉลี่ย ${nM} เดือน — รวม 2568 = ${totalR68.toFixed(2)}% / 2569 = ${totalR69.toFixed(2)}%</div>
+  <div class="sec-title">🏙️ กำไรรายกลุ่ม · ${city} (เปรียบเทียบ ${nM} เดือน)</div>
+  <div class="note">📌 สัดส่วนเฉลี่ย ${nM} เดือน — รวม 2568 = ${totalR68.toFixed(2)}% / 2569 = ${totalR69.toFixed(2)}%</div>
   <div class="leg">
     <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c68)"></span>ปี 2568</div>
     <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c69)"></span>ปี 2569</div>
@@ -396,36 +409,34 @@ function renderOverview(data, contentId, subId, city) {
   <div class="box"><table>
     <thead><tr>
       <th class="L">กลุ่มสินค้า</th>
-      <th>กำไร 2568 (${mLabel}) บ.</th><th>สัดส่วน 2568 (%)</th>
-      <th>กำไร 2569 (${mLabel}) บ.</th><th>สัดส่วน 2569 (%)</th>
+      <th>กำไร 2568 (${nM} ด.) บ.</th><th>สัดส่วน 2568</th>
+      <th>กำไร 2569 (${nM} ด.) บ.</th><th>สัดส่วน 2569</th>
       <th>±%</th>
     </tr></thead>
     <tbody>${tRows}
       <tr class="tot">
         <td class="L">รวมทุกกลุ่ม</td>
-        <td>${fmt(total68_nm)}</td><td><span class="bv" style="color:var(--muted)">${totalR68.toFixed(2)}%</span></td>
-        <td>${fmt(total69_nm)}</td><td><span class="bv" style="color:var(--muted)">${totalR69.toFixed(2)}%</span></td>
+        <td>${fmt(total68_nm)}</td><td><span class="bv">${totalR68.toFixed(2)}%</span></td>
+        <td>${fmt(total69_nm)}</td><td><span class="bv">${totalR69.toFixed(2)}%</span></td>
         <td>${pctBadge(diff_pct)}</td>
       </tr>
     </tbody>
   </table></div>`;
 
-  // ── TABLE 2: กลุ่ม × เดือน (รวม nM เดือน เทียบ 2 ปี) ──
+  // ── TABLE 2: รายกลุ่ม รวม nM เดือน เทียบ 2 ปี ──
   let t2rows='';
   for (const p of products) {
-    const diff = p.sum69_nm - p.sum68_nm;
-    const pct  = p.sum68_nm ? diff/p.sum68_nm*100 : null;
     t2rows+=`<tr>
       <td class="L">${p.name}</td>
       <td class="yr68">${fmt(p.sum68_nm)}</td>
       <td class="yr69">${fmt(p.sum69_nm)}</td>
-      <td>${diff>=0?'+':''}${fmt(diff)}</td>
-      <td>${pctBadge(pct)}</td>
+      <td>${p.diff_bath>=0?'+':''}${fmt(p.diff_bath)}</td>
+      <td>${pctBadge(p.diff_pct)}</td>
     </tr>`;
   }
-  const total_diff = total69_nm - total68_nm;
+  const total_diff=total69_nm-total68_nm;
   const tableSum=`
-  <div class="sec-title">📊 กำไรรายกลุ่ม รวม ${mLabel} เปรียบเทียบ 2 ปี</div>
+  <div class="sec-title">📊 กำไรรายกลุ่ม รวม ${nM} เดือน เปรียบเทียบ 2 ปี</div>
   <div class="box"><table>
     <thead><tr>
       <th class="L">กลุ่มสินค้า</th>
@@ -443,102 +454,103 @@ function renderOverview(data, contentId, subId, city) {
     </tbody>
   </table></div>`;
 
-  // ── TABLE 3: กลุ่ม × เดือน (paired columns: 2568|2569 ต่อเดือน) ──
-  // header row 1: กลุ่ม + เดือน (colspan 2) × 12 + รวม (colspan 2)
-  let thRow1 = `<th class="L tbl-cross" style="min-width:90px" rowspan="2">กลุ่มสินค้า</th>`;
-  for (let m=0;m<12;m++) thRow1+=`<th colspan="2" style="text-align:center;background:var(--surface2);border-bottom:1px solid var(--border)">${MONTHS_TH[m]}</th>`;
-  thRow1+=`<th colspan="2" style="text-align:center;background:var(--surface2);border-bottom:1px solid var(--border)">รวม</th>`;
-
-  // header row 2: 2568 | 2569 ต่อทุกเดือน + รวม
-  let thRow2='';
-  for (let m=0;m<13;m++) {
-    thRow2+=`<th style="color:var(--c68);background:#fff7ed;font-size:.62rem;border-top:2px solid var(--c68)">2568<br><span style="font-weight:400;font-size:.58rem;color:#92400e">กำไร / สัดส่วน</span></th>`;
-    thRow2+=`<th style="color:var(--c69);background:#eff6ff;font-size:.62rem;border-top:2px solid var(--c69)">2569<br><span style="font-weight:400;font-size:.58rem;color:#1e40af">กำไร / สัดส่วน</span></th>`;
+  // ── TABLE 3: กลุ่ม × เดือน paired (2568|2569 ต่อเดือน) + สัดส่วนใต้กำไร ──
+  function cellP(val,ratio,yr) {
+    const col=yr===68?'var(--c68)':'var(--c69)';
+    const bg =yr===68?'#fff7ed':'#eff6ff';
+    const rc =yr===68?'#92400e':'#1e40af';
+    if (val===null||val===undefined||val===0&&ratio===null)
+      return `<td style="background:${bg};color:#bbb;text-align:center;font-size:.7rem">—</td>`;
+    const rs=ratio!=null?`<br><span style="font-size:.6rem;color:${rc}">${ratio.toFixed(2)}%</span>`:'';
+    return `<td style="background:${bg};color:${col};text-align:right;font-family:var(--mono);font-size:.72rem;line-height:1.5">${fmt(val)}${rs}</td>`;
   }
 
-  // helper: cell with ratio below
-  function cellPair(val, ratio, yr) {
-    const col = yr===68?'var(--c68)':'var(--c69)';
-    const bg  = yr===68?'#fff7ed':'#eff6ff';
-    const rc  = yr===68?'#92400e':'#1e40af';
-    if (val===null||val===undefined||val==='') {
-      return `<td style="background:${bg};color:var(--muted2);text-align:center">—</td>`;
-    }
-    const ratioStr = (ratio!==null&&ratio!==undefined) ? `<br><span style="font-size:.6rem;color:${rc}">${ratio.toFixed(2)}%</span>` : '';
-    return `<td style="background:${bg};color:${col};text-align:right;font-family:var(--mono);font-size:.72rem">${fmt(val)}${ratioStr}</td>`;
+  // header row1: ชื่อกลุ่ม (rowspan2) + เดือน (colspan2) x12 + รวม (colspan2)
+  let th1=`<th class="L" rowspan="2" style="min-width:90px;vertical-align:middle">กลุ่มสินค้า</th>`;
+  for (let m=0;m<12;m++) th1+=`<th colspan="2" style="text-align:center;background:var(--surface2)">${MONTHS_TH[m]}</th>`;
+  th1+=`<th colspan="2" style="text-align:center;background:var(--surface2)">รวม</th>`;
+
+  // header row2: 2568|2569 ต่อทุก colspan (13 คู่)
+  let th2='';
+  for (let i=0;i<13;i++) {
+    th2+=`<th style="color:var(--c68);background:#fff7ed;border-top:2px solid var(--c68);font-size:.62rem;white-space:nowrap">2568</th>`;
+    th2+=`<th style="color:var(--c69);background:#eff6ff;border-top:2px solid var(--c69);font-size:.62rem;white-space:nowrap">2569</th>`;
   }
 
   let t3rows='';
   for (const p of products) {
-    const r = ratios.find(x=>x.name===p.name)||{r68:Array(12).fill(null),r69:Array(12).fill(null)};
+    const r=ratios.find(x=>x.name===p.name)||{r68:Array(12).fill(null),r69:Array(12).fill(null),avg68:null,avg69:null};
     let cells='';
     for (let m=0;m<12;m++) {
-      const v68 = p.v68[m]||null;
-      const v69 = (m<nM) ? (p.v69[m]||null) : null;
-      const ra68 = r.r68[m];
-      const ra69 = (m<nM) ? r.r69[m] : null;
-      cells += cellPair(v68, ra68, 68) + cellPair(v69, ra69, 69);
+      cells+=cellP(p.v68[m], r.r68[m], 68);
+      cells+=m<nM ? cellP(p.v69[m], r.r69[m], 69) : `<td style="background:#eff6ff;color:#bbb;text-align:center;font-size:.7rem">—</td>`;
     }
-    // รวม 2568 (เต็มปี) + รวม 2569 (nM เดือน) พร้อม avg ratio
-    const avgR68 = r.r68.filter(v=>v!==null).reduce((a,b)=>a+b,0) / (r.r68.filter(v=>v!==null).length||1);
-    const avgR69v = r.r69.slice(0,nM).filter(v=>v!==null&&v>0);
-    const avgR69 = avgR69v.length ? avgR69v.reduce((a,b)=>a+b,0)/avgR69v.length : null;
-    cells += cellPair(p.sum68_full, avgR68, 68) + cellPair(p.sum69_nm, avgR69, 69);
+    // คอลัมน์รวม: 2568=เต็มปี, 2569=nM เดือน
+    const avgFull68=r.r68.filter(v=>v).reduce((a,b)=>a+b,0)/(r.r68.filter(v=>v).length||1);
+    cells+=cellP(p.sum68_full, avgFull68, 68);
+    cells+=cellP(p.sum69_nm, r.avg69||null, 69);
     t3rows+=`<tr><td class="grp">${p.name}</td>${cells}</tr>`;
   }
-
   // total row
   let totCells='';
   for (let m=0;m<12;m++) {
     const s68=products.reduce((s,p)=>s+safe(p.v68[m]),0);
-    const s69=(m<nM)?products.reduce((s,p)=>s+safe(p.v69[m]),0):null;
-    // ratio รวม: ดึงจาก ratios แถว รวมทุกกลุ่ม หรือ compute เอาไม่ได้ → ใส่ null
-    totCells += cellPair(s68||null, null, 68) + cellPair(s69, null, 69);
+    const s69=m<nM?products.reduce((s,p)=>s+safe(p.v69[m]),0):null;
+    totCells+=`<td style="background:#fff7ed;color:var(--c68);text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700">${fmt(s68)}</td>`;
+    totCells+=s69!=null?`<td style="background:#eff6ff;color:var(--c69);text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700">${fmt(s69)}</td>`
+                       :`<td style="background:#eff6ff;color:#bbb;text-align:center;font-size:.7rem">—</td>`;
   }
-  totCells += cellPair(total68_full, null, 68) + cellPair(total69_nm, null, 69);
-  t3rows+=`<tr class="tot-row"><td class="grp" style="font-family:var(--font);font-weight:700">รวมทุกกลุ่ม</td>${totCells}</tr>`;
+  totCells+=`<td style="background:#fff7ed;color:var(--c68);text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700">${fmt(total68_full)}</td>`;
+  totCells+=`<td style="background:#eff6ff;color:var(--c69);text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700">${fmt(total69_nm)}</td>`;
+  t3rows+=`<tr class="tot-row"><td class="grp" style="font-weight:700">รวมทุกกลุ่ม</td>${totCells}</tr>`;
 
   const tableCross=`
   <div class="sec-title">📅 กำไรรายกลุ่ม × รายเดือน (2568 เต็มปี · 2569 ม.ค.–${mEnd})</div>
   <div class="leg">
-    <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c68)"></span>ปี 2568</div>
-    <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c69)"></span>ปี 2569</div>
-    <span style="font-size:.72rem;color:var(--muted)">· ตัวเลขเล็กใต้กำไร = สัดส่วนขายออก (%) · รวม = เฉลี่ยสัดส่วนตลอดช่วง</span>
+    <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c68)"></span>2568</div>
+    <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c69)"></span>2569</div>
+    <span style="font-size:.72rem;color:var(--muted)">· ตัวเลขเล็ก = สัดส่วนขายออก% · รวม = เฉลี่ยสัดส่วนตลอดช่วง · เดือน 6–12 ของปี 2569 เว้นว่าง</span>
   </div>
   <div class="box" style="overflow-x:auto">
     <table class="tbl-cross">
-      <thead>
-        <tr>${thRow1}</tr>
-        <tr>${thRow2}</tr>
-      </thead>
+      <thead><tr>${th1}</tr><tr>${th2}</tr></thead>
       <tbody>${t3rows}</tbody>
     </table>
   </div>`;
 
   // ── BAR CHART + ตารางรายเดือนรวม ──
-  const maxM = Math.max(...monthly.map(m=>Math.max(m.s68,m.s69)),1);
+  const maxM=Math.max(...monthly.map(m=>Math.max(m.s68,m.s69)),1);
   let chartCols='';
   for (const m of monthly) {
     const h68=m.s68?Math.round(m.s68/maxM*110):0;
     const h69=m.s69?Math.round(m.s69/maxM*110):0;
     const has69=m.s69>0;
+    const rSum68=ratios.reduce((s,r)=>s+(r.r68[m.m]||0),0);
+    const rSum69=has69?ratios.reduce((s,r)=>s+(r.r69[m.m]||0),0):null;
     chartCols+=`<div class="chart-col">
       <div class="chart-bars">
         <div class="bar" style="background:var(--c68);height:${h68}px" title="2568 ${MONTHS_TH[m.m]}: ${fmt(m.s68)}"></div>
-        <div class="bar" style="background:${has69?'var(--c69)':'var(--border)'};height:${has69?h69:4}px;opacity:${has69?1:.4}" title="2569 ${MONTHS_TH[m.m]}: ${has69?fmt(m.s69):'ยังไม่มีข้อมูล'}"></div>
+        <div class="bar" style="background:${has69?'var(--c69)':'var(--border)'};height:${has69?h69:4}px;opacity:${has69?1:.3}" title="${has69?'2569 '+MONTHS_TH[m.m]+': '+fmt(m.s69):'ยังไม่มีข้อมูล'}"></div>
       </div>
       <div class="chart-label">${MONTHS_TH[m.m]}</div>
+      <div class="chart-label" style="font-size:.58rem;color:var(--c68)">${rSum68.toFixed(1)}%</div>
+      ${has69?`<div class="chart-label" style="font-size:.58rem;color:var(--c69)">${rSum69.toFixed(1)}%</div>`:'<div class="chart-label" style="font-size:.58rem"> </div>'}
     </div>`;
   }
+
   let mRows='';
   for (const m of monthly) {
     const has69=m.s69>0;
     const diff=has69?m.s69-m.s68:null;
     const pct=has69&&m.s68?diff/m.s68*100:null;
+    const rSum68=ratios.reduce((s,r)=>s+(r.r68[m.m]||0),0);
+    const rSum69=has69?ratios.reduce((s,r)=>s+(r.r69[m.m]||0),0):null;
     mRows+=`<tr>
       <td class="L">${MONTHS_TH[m.m]}</td>
       <td>${fmt(m.s68)}</td>
+      <td style="color:var(--muted);font-size:.7rem">${rSum68.toFixed(2)}%</td>
       <td>${has69?fmt(m.s69):'<span class="m-blank">—</span>'}</td>
+      <td style="color:var(--muted);font-size:.7rem">${rSum69!=null?rSum69.toFixed(2)+'%':'—'}</td>
       <td>${diff!==null?(diff>=0?'+':'')+fmt(diff):'<span class="m-blank">—</span>'}</td>
       <td>${diff!==null?pctBadge(pct):'<span class="m-blank">—</span>'}</td>
     </tr>`;
@@ -546,23 +558,26 @@ function renderOverview(data, contentId, subId, city) {
   const tableMonthly=`
   <div class="sec-title">📈 กำไรรายเดือน รวมทุกกลุ่ม เปรียบเทียบ 2568 vs 2569</div>
   <div class="box">
-    <div class="box-head">📊 Bar Chart <span style="color:var(--muted);font-weight:400;font-size:.75rem">— สีส้ม=2568 · สีน้ำเงิน=2569</span></div>
+    <div class="box-head">📊 Bar Chart <span style="color:var(--muted);font-weight:400;font-size:.75rem">— ส้ม=2568 · น้ำเงิน=2569 · ตัวเลขใต้แท่ง=สัดส่วนรวม%</span></div>
     <div class="chart-wrap"><div class="chart">${chartCols}</div></div>
   </div>
   <div class="box">
     <div class="box-head">🗓️ ตารางรายเดือน รวมทุกกลุ่ม</div>
     <table class="tbl-month">
-      <thead><tr><th class="L">เดือน</th><th>กำไร 2568 (บ.)</th><th>กำไร 2569 (บ.)</th><th>±บาท</th><th>±%</th></tr></thead>
+      <thead><tr>
+        <th class="L">เดือน</th>
+        <th style="color:var(--c68)">กำไร 2568</th><th style="color:var(--c68)">สัดส่วน%</th>
+        <th style="color:var(--c69)">กำไร 2569</th><th style="color:var(--c69)">สัดส่วน%</th>
+        <th>±บาท</th><th>±%</th>
+      </tr></thead>
       <tbody>${mRows}</tbody>
     </table>
   </div>`;
 
-  document.getElementById(contentId).innerHTML = cards + tableGroup + tableSum + tableCross + tableMonthly;
+  document.getElementById(contentId).innerHTML=cards+tableGroup+tableSum+tableCross+tableMonthly;
 }
 
-// ══════════════════════════════════════════════
-//  RENDER PAGE 3/4 (Detail with group filter)
-// ══════════════════════════════════════════════
+
 function renderDetail(rows, contentId, city) {
   if (!rows || rows.length < 2) {
     document.getElementById(contentId).innerHTML = '<div class="err-box">ไม่พบข้อมูล หรือ Sheet ยังไม่เปิด Public</div>';
