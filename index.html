@@ -20,11 +20,11 @@ body { font-family:var(--font); background:var(--surface); color:var(--text); fo
 .nav { background:#111827; display:flex; flex-direction:column; position:sticky; top:0; z-index:9999; box-shadow:0 2px 12px rgba(0,0,0,.4) }
 .nav-row1 { display:flex; align-items:center; width:100%; border-bottom:1px solid rgba(255,255,255,.08) }
 .nav-brand { color:var(--accent); font-size:.9rem; font-weight:700; padding:12px 18px; border-right:1px solid rgba(255,255,255,.1); white-space:nowrap; flex-shrink:0 }
-.nav-row2 { display:flex; width:100% }
+.nav-row2 { display:flex; width:100%; padding:0 8px 6px }
 .nav-tabs { display:flex; width:100% }
-.nav-tab { color:rgba(255,255,255,.6); padding:11px 0; cursor:pointer; border-bottom:3px solid transparent; white-space:nowrap; font-size:.82rem; font-weight:500; transition:all .15s; user-select:none; flex:1; text-align:center }
-.nav-tab:hover { color:#fff; background:rgba(255,255,255,.07) }
-.nav-tab.active { color:#fff; border-bottom-color:var(--accent); background:rgba(255,255,255,.04) }
+.nav-tab { color:rgba(255,255,255,.6); padding:9px 6px; cursor:pointer; border:1px solid rgba(255,255,255,.12); border-radius:6px; white-space:nowrap; font-size:.78rem; font-weight:500; transition:all .15s; user-select:none; flex:1; text-align:center; margin:5px 3px }
+.nav-tab:hover { color:#fff; background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.25) }
+.nav-tab.active { color:#fff; background:rgba(224,123,30,.25); border-color:var(--accent); font-weight:700 }
 .nav-right { padding:0 14px; display:flex; gap:8px; align-items:center; margin-left:auto; flex-shrink:0 }
 .btn-sheet { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); color:rgba(255,255,255,.8); font-family:var(--font); font-size:.75rem; padding:6px 12px; border-radius:6px; cursor:pointer; text-decoration:none; transition:all .15s; white-space:nowrap }
 .btn-sheet:hover { background:rgba(255,255,255,.16); color:#fff }
@@ -397,6 +397,7 @@ function renderOverview(data, contentId, subId, city) {
       <td><div class="bw"><div class="bb"><div class="f68" style="width:${barWidth(rs68nm,maxRatio)}%"></div></div><span class="bv">${rs68nm.toFixed(2)}%</span></div></td>
       <td>${fmt(p.sum69_nm)}</td>
       <td><div class="bw"><div class="bb"><div class="f69" style="width:${barWidth(r.rsum69_nm,maxRatio)}%"></div></div><span class="bv">${r.rsum69_nm.toFixed(2)}%</span></div></td>
+      <td>${p.diff_bath>=0?'+':''}${fmt(p.diff_bath)}</td>
       <td>${pctBadge(p.diff_pct)}</td>
     </tr>`;
   }
@@ -412,44 +413,13 @@ function renderOverview(data, contentId, subId, city) {
       <th class="L">กลุ่มสินค้า</th>
       <th>กำไร 2568 (${nM} ด.) บ.</th><th>สัดส่วน 2568</th>
       <th>กำไร 2569 (${nM} ด.) บ.</th><th>สัดส่วน 2569</th>
-      <th>±%</th>
+      <th>±บาท</th><th>±%</th>
     </tr></thead>
     <tbody>${tRows}
       <tr class="tot">
         <td class="L">รวมทุกกลุ่ม</td>
         <td>${fmt(total68_nm)}</td><td><span class="bv">${totalR68.toFixed(2)}%</span></td>
         <td>${fmt(total69_nm)}</td><td><span class="bv">${totalR69.toFixed(2)}%</span></td>
-        <td>${pctBadge(diff_pct)}</td>
-      </tr>
-    </tbody>
-  </table></div>`;
-
-  // ── TABLE 2: รายกลุ่ม รวม nM เดือน เทียบ 2 ปี ──
-  let t2rows='';
-  for (const p of products) {
-    t2rows+=`<tr>
-      <td class="L">${p.name}</td>
-      <td class="yr68">${fmt(p.sum68_nm)}</td>
-      <td class="yr69">${fmt(p.sum69_nm)}</td>
-      <td>${p.diff_bath>=0?'+':''}${fmt(p.diff_bath)}</td>
-      <td>${pctBadge(p.diff_pct)}</td>
-    </tr>`;
-  }
-  const total_diff=total69_nm-total68_nm;
-  const tableSum=`
-  <div class="sec-title">📊 กำไรรายกลุ่ม รวม ${nM} เดือน เปรียบเทียบ 2 ปี</div>
-  <div class="box"><table>
-    <thead><tr>
-      <th class="L">กลุ่มสินค้า</th>
-      <th style="color:var(--c68)">กำไรรวม 2568 (บ.)</th>
-      <th style="color:var(--c69)">กำไรรวม 2569 (บ.)</th>
-      <th>±บาท</th><th>±%</th>
-    </tr></thead>
-    <tbody>${t2rows}
-      <tr class="tot">
-        <td class="L">รวมทุกกลุ่ม</td>
-        <td>${fmt(total68_nm)}</td><td>${fmt(total69_nm)}</td>
-        <td>${total_diff>=0?'+':''}${fmt(total_diff)}</td>
         <td>${pctBadge(diff_pct)}</td>
       </tr>
     </tbody>
