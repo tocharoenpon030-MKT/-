@@ -11,7 +11,7 @@
   --accent:#e07b1e; --green:#16a34a; --red:#dc2626; --yellow:#d97706;
   --text:#111827; --muted:#6b7280; --muted2:#9ca3af;
   --font:'Sarabun',sans-serif; --mono:'IBM Plex Mono',monospace;
-  --r:10px; --c68:#e07b1e; --c69:#2563eb;
+  --r:10px; --c68:#2563eb; --c69:#e07b1e;
 }
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
 body { font-family:var(--font); background:var(--surface); color:var(--text); font-size:14px; min-height:100vh }
@@ -20,11 +20,11 @@ body { font-family:var(--font); background:var(--surface); color:var(--text); fo
 .nav { background:#111827; display:flex; flex-direction:column; position:sticky; top:0; z-index:9999; box-shadow:0 2px 12px rgba(0,0,0,.4) }
 .nav-row1 { display:flex; align-items:center; width:100%; border-bottom:1px solid rgba(255,255,255,.08) }
 .nav-brand { color:var(--accent); font-size:.9rem; font-weight:700; padding:12px 18px; border-right:1px solid rgba(255,255,255,.1); white-space:nowrap; flex-shrink:0 }
-.nav-row2 { display:flex; width:100% }
+.nav-row2 { display:flex; width:100%; padding:0 8px 5px }
 .nav-tabs { display:flex; width:100% }
-.nav-tab { color:rgba(255,255,255,.6); padding:11px 0; cursor:pointer; border-bottom:3px solid transparent; white-space:nowrap; font-size:.82rem; font-weight:500; transition:all .15s; user-select:none; flex:1; text-align:center }
-.nav-tab:hover { color:#fff; background:rgba(255,255,255,.07) }
-.nav-tab.active { color:#fff; border-bottom-color:var(--accent); background:rgba(255,255,255,.04) }
+.nav-tab { color:rgba(255,255,255,.7); padding:7px 4px; cursor:pointer; border:1px solid rgba(255,255,255,.2); border-radius:6px; white-space:nowrap; font-size:.78rem; font-weight:500; transition:all .15s; user-select:none; flex:1; text-align:center; margin:4px 3px }
+.nav-tab:hover { color:#fff; background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.35) }
+.nav-tab.active { color:#fff; background:rgba(224,123,30,.3); border-color:var(--accent); font-weight:700 }
 .nav-right { padding:0 14px; display:flex; gap:8px; align-items:center; margin-left:auto; flex-shrink:0 }
 .btn-sheet { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); color:rgba(255,255,255,.8); font-family:var(--font); font-size:.75rem; padding:6px 12px; border-radius:6px; cursor:pointer; text-decoration:none; transition:all .15s; white-space:nowrap }
 .btn-sheet:hover { background:rgba(255,255,255,.16); color:#fff }
@@ -400,66 +400,11 @@ function renderOverview(data, contentId, subId, city) {
       <td>${pctBadge(p.diff_pct)}</td>
     </tr>`;
   }
-  const tableGroup=`
-  <div class="sec-title">🏙️ กำไรรายกลุ่ม · ${city} (เปรียบเทียบ ${nM} เดือน)</div>
-  <div class="note">📌 สัดส่วนรวม ${nM} เดือน — รวม 2568 = ${tR68nm.toFixed(2)}% / 2569 = ${tR69nm.toFixed(2)}%</div>
-  <div class="leg">
-    <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c68)"></span>ปี 2568</div>
-    <div style="display:flex;align-items:center;gap:5px"><span class="ld" style="background:var(--c69)"></span>ปี 2569</div>
-  </div>
-  <div class="box"><table>
-    <thead><tr>
-      <th class="L">กลุ่มสินค้า</th>
-      <th>กำไร 2568 (${nM} ด.) บ.</th><th>สัดส่วน 2568</th>
-      <th>กำไร 2569 (${nM} ด.) บ.</th><th>สัดส่วน 2569</th>
-      <th>±%</th>
-    </tr></thead>
-    <tbody>${tRows}
-      <tr class="tot">
-        <td class="L">รวมทุกกลุ่ม</td>
-        <td>${fmt(total68_nm)}</td><td><span class="bv">${totalR68.toFixed(2)}%</span></td>
-        <td>${fmt(total69_nm)}</td><td><span class="bv">${totalR69.toFixed(2)}%</span></td>
-        <td>${pctBadge(diff_pct)}</td>
-      </tr>
-    </tbody>
-  </table></div>`;
-
-  // ── TABLE 2: รายกลุ่ม รวม nM เดือน เทียบ 2 ปี ──
-  let t2rows='';
-  for (const p of products) {
-    t2rows+=`<tr>
-      <td class="L">${p.name}</td>
-      <td class="yr68">${fmt(p.sum68_nm)}</td>
-      <td class="yr69">${fmt(p.sum69_nm)}</td>
-      <td>${p.diff_bath>=0?'+':''}${fmt(p.diff_bath)}</td>
-      <td>${pctBadge(p.diff_pct)}</td>
-    </tr>`;
-  }
-  const total_diff=total69_nm-total68_nm;
-  const tableSum=`
-  <div class="sec-title">📊 กำไรรายกลุ่ม รวม ${nM} เดือน เปรียบเทียบ 2 ปี</div>
-  <div class="box"><table>
-    <thead><tr>
-      <th class="L">กลุ่มสินค้า</th>
-      <th style="color:var(--c68)">กำไรรวม 2568 (บ.)</th>
-      <th style="color:var(--c69)">กำไรรวม 2569 (บ.)</th>
-      <th>±บาท</th><th>±%</th>
-    </tr></thead>
-    <tbody>${t2rows}
-      <tr class="tot">
-        <td class="L">รวมทุกกลุ่ม</td>
-        <td>${fmt(total68_nm)}</td><td>${fmt(total69_nm)}</td>
-        <td>${total_diff>=0?'+':''}${fmt(total_diff)}</td>
-        <td>${pctBadge(diff_pct)}</td>
-      </tr>
-    </tbody>
-  </table></div>`;
-
   // ── TABLE 3: กลุ่ม × เดือน paired (2568|2569 ต่อเดือน) + สัดส่วนใต้กำไร ──
   function cellP(val,ratio,yr) {
     const col=yr===68?'var(--c68)':'var(--c69)';
-    const bg =yr===68?'#fff7ed':'#eff6ff';
-    const rc =yr===68?'#92400e':'#1e40af';
+    const bg =yr===68?'#eff6ff':'#fff7ed';
+    const rc =yr===68?'#1e40af':'#92400e';
     if (val===null||val===undefined||val===0&&ratio===null)
       return `<td style="background:${bg};color:#bbb;text-align:center;font-size:.7rem">—</td>`;
     const rs=ratio!=null?`<br><span style="font-size:.6rem;color:${rc}">${ratio.toFixed(2)}%</span>`:'';
@@ -474,8 +419,8 @@ function renderOverview(data, contentId, subId, city) {
   // header row2: 2568|2569 ต่อทุก colspan (13 คู่)
   let th2='';
   for (let i=0;i<13;i++) {
-    th2+=`<th style="color:var(--c68);background:#fff7ed;border-top:2px solid var(--c68);font-size:.62rem;white-space:nowrap">2568</th>`;
-    th2+=`<th style="color:var(--c69);background:#eff6ff;border-top:2px solid var(--c69);font-size:.62rem;white-space:nowrap">2569</th>`;
+    th2+=`<th style="color:var(--c68);background:#eff6ff;border-top:2px solid var(--c68);font-size:.62rem;white-space:nowrap">2568</th>`;
+    th2+=`<th style="color:var(--c69);background:#fff7ed;border-top:2px solid var(--c69);font-size:.62rem;white-space:nowrap">2569</th>`;
   }
 
   let t3rows='';
@@ -490,8 +435,8 @@ function renderOverview(data, contentId, subId, city) {
     const db=p.sum69_nm-p.sum68_nm; const dp=p.sum68_nm?(db/p.sum68_nm*100):null;
     const updn68='';
     const updn69=db!==null?`<br><span style="font-size:.6rem;color:${db>=0?'#059669':'#dc2626'}">${db>=0?'▲+':'▼'}${fmt(db)}</span><br><span style="font-size:.6rem;color:${db>=0?'#059669':'#dc2626'}">${dp!=null?(dp>=0?'▲+':'▼')+dp.toFixed(1)+'%':''}</span>`:'';
-    cells+=`<td style="background:#fff7ed;color:var(--c68);text-align:right;font-family:var(--mono);font-size:.72rem;line-height:1.5">${fmt(p.sum68_full)}<br><span style="font-size:.6rem;color:#92400e">${r.rsum68_full.toFixed(2)}%</span></td>`;
-    cells+=`<td style="background:#eff6ff;color:var(--c69);text-align:right;font-family:var(--mono);font-size:.72rem;line-height:1.5">${fmt(p.sum69_nm)}<br><span style="font-size:.6rem;color:#1e40af">${r.rsum69_nm.toFixed(2)}%</span>${updn69}</td>`;
+    cells+=`<td style="background:#eff6ff;color:var(--c68);text-align:right;font-family:var(--mono);font-size:.72rem;line-height:1.5">${fmt(p.sum68_full)}<br><span style="font-size:.6rem;color:#1e40af">${r.rsum68_full.toFixed(2)}%</span></td>`;
+    cells+=`<td style="background:#fff7ed;color:var(--c69);text-align:right;font-family:var(--mono);font-size:.72rem;line-height:1.5">${fmt(p.sum69_nm)}<br><span style="font-size:.6rem;color:#92400e">${r.rsum69_nm.toFixed(2)}%</span>${updn69}</td>`;
     t3rows+=`<tr><td class="grp">${p.name}</td>${cells}</tr>`;
   }
   // total row
@@ -499,14 +444,14 @@ function renderOverview(data, contentId, subId, city) {
   for (let m=0;m<12;m++) {
     const s68=products.reduce((s,p)=>s+safe(p.v68[m]),0);
     const s69=m<nM?products.reduce((s,p)=>s+safe(p.v69[m]),0):null;
-    totCells+=`<td style="background:#fff7ed;color:var(--c68);text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700">${fmt(s68)}</td>`;
-    totCells+=s69!=null?`<td style="background:#eff6ff;color:var(--c69);text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700">${fmt(s69)}</td>`
+    totCells+=`<td style="background:#eff6ff;color:var(--c68);text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700">${fmt(s68)}</td>`;
+    totCells+=s69!=null?`<td style="background:#fff7ed;color:var(--c69);text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700">${fmt(s69)}</td>`
                        :`<td style="background:#eff6ff;color:#bbb;text-align:center;font-size:.7rem">—</td>`;
   }
   const tRsum68=ratios.reduce((s,r)=>s+r.rsum68_full,0);
   const tRsum69=ratios.reduce((s,r)=>s+r.rsum69_nm,0);
-  totCells+=`<td style="background:#fff7ed;color:var(--c68);text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700">${fmt(total68_full)}<br><span style="font-size:.6rem;color:#92400e">${tRsum68.toFixed(2)}%</span></td>`;
-  totCells+=`<td style="background:#eff6ff;color:var(--c69);text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700">${fmt(total69_nm)}<br><span style="font-size:.6rem;color:#1e40af">${tRsum69.toFixed(2)}%</span></td>`;
+  totCells+=`<td style="background:#eff6ff;color:var(--c68);text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700">${fmt(total68_full)}<br><span style="font-size:.6rem;color:#1e40af">${tRsum68.toFixed(2)}%</span></td>`;
+  totCells+=`<td style="background:#fff7ed;color:var(--c69);text-align:right;font-family:var(--mono);font-size:.72rem;font-weight:700">${fmt(total69_nm)}<br><span style="font-size:.6rem;color:#92400e">${tRsum69.toFixed(2)}%</span></td>`;
   t3rows+=`<tr class="tot-row"><td class="grp" style="font-weight:700">รวมทุกกลุ่ม</td>${totCells}</tr>`;
 
   const tableCross=`
@@ -563,7 +508,7 @@ function renderOverview(data, contentId, subId, city) {
   const tableMonthly=`
   <div class="sec-title">📈 กำไรรายเดือน รวมทุกกลุ่ม เปรียบเทียบ 2568 vs 2569</div>
   <div class="box">
-    <div class="box-head">📊 Bar Chart <span style="color:var(--muted);font-weight:400;font-size:.75rem">— ส้ม=2568 · น้ำเงิน=2569 · ตัวเลขใต้แท่ง=สัดส่วนรวม%</span></div>
+    <div class="box-head">📊 Bar Chart <span style="color:var(--muted);font-weight:400;font-size:.75rem">— น้ำเงิน=2568 · ส้ม=2569 · ตัวเลขใต้แท่ง=สัดส่วนรวม%</span></div>
     <div class="chart-wrap"><div class="chart">${chartCols}</div></div>
   </div>
   <div class="box">
@@ -579,7 +524,7 @@ function renderOverview(data, contentId, subId, city) {
     </table>
   </div>`;
 
-  document.getElementById(contentId).innerHTML=cards+tableGroup+tableSum+tableCross+tableMonthly;
+  document.getElementById(contentId).innerHTML=cards+tableMonthly+tableCross;
 }
 
 
@@ -656,12 +601,12 @@ function renderDetail(rows, contentId, city) {
           <td>${md.price69!=null?fmt2(md.price69):'<span class="m-blank">—</span>'}</td>
           <td><div class="cell-2row">
             <div class="row1">${has68?fmt(md.qty68):'<span class="m-blank">—</span>'}</div>
-            <div class="row2" style="color:var(--green)">${gpu68!=null?fmt2(gpu68)+' /หน่วย':''}</div>
-            <div class="row2" style="color:#059669;font-weight:600">${has68?fmt(md.profit68):''}</div>
+            <div class="row2" style="color:#1e40af">${gpu68!=null?fmt2(gpu68)+' /หน่วย':''}</div>
+            <div class="row2" style="color:#1e40af;font-weight:600">${has68?fmt(md.profit68):''}</div>
           </div></td>
           <td><div class="cell-2row">
             <div class="row1">${has69?fmt(md.qty69):'<span class="m-blank">—</span>'}</div>
-            <div class="row2" style="color:#60a5fa">${gpu69!=null?fmt2(gpu69)+' /หน่วย':''}</div>
+            <div class="row2" style="color:#92400e">${gpu69!=null?fmt2(gpu69)+' /หน่วย':''}</div>
             <div class="row2" style="color:var(--c69);font-weight:600">${has69?fmt(md.profit69):''}</div>
           </div></td>
         </tr>`;
@@ -680,12 +625,12 @@ function renderDetail(rows, contentId, city) {
           <th>ราคาขายเฉลี่ย<br>2568</th>
           <th>ราคาขายเฉลี่ย<br>2569</th>
           <th>จำนวนขาย 2568<br>
-            <span style="font-weight:400;color:var(--green)">กำไร/หน่วย</span> ·
-            <span style="font-weight:600;color:#059669">กำไรรวม</span>
+            <span style="font-weight:400;color:#1e40af">กำไร/หน่วย</span> ·
+            <span style="font-weight:600;color:#1e40af">กำไรรวม</span>
           </th>
           <th>จำนวนขาย 2569<br>
-            <span style="font-weight:400;color:#60a5fa">กำไร/หน่วย</span> ·
-            <span style="font-weight:600;color:var(--c69)">กำไรรวม</span>
+            <span style="font-weight:400;color:#92400e">กำไร/หน่วย</span> ·
+            <span style="font-weight:600;color:#92400e">กำไรรวม</span>
           </th>
         </tr></thead>
         <tbody>${tbody}</tbody>
