@@ -785,7 +785,7 @@ function renderOverview(data, contentId, subId, city) {
         <div class="pie-leg-val">${sl.value.toFixed(2)}%</div>
       </div>`;
     });
-    // ส่วนที่เหลือ (ยังไม่ขายออก)
+    // ส่วนที่เหลือ (สินค้าหลัก)
     const remaining = 100 - total;
     if (remaining > 0.01) {
       const sweep = remaining/100 * Math.PI*2;
@@ -795,11 +795,11 @@ function renderOverview(data, contentId, subId, city) {
       const large=sweep>Math.PI?1:0;
       paths+=`<path d="M${cx},${cy} L${x1.toFixed(2)},${y1.toFixed(2)} A${r},${r} 0 ${large},1 ${x2.toFixed(2)},${y2.toFixed(2)} Z"
         fill="#e5e7eb" stroke="white" stroke-width="1.5">
-        <title>ยังไม่ขายออก: ${remaining.toFixed(2)}%</title>
+        <title>สินค้าหลัก: ${remaining.toFixed(2)}%</title>
       </path>`;
       legItems.push(`<div class="pie-leg-item">
         <div class="pie-leg-dot" style="background:#e5e7eb;border:1px solid #d1d5db"></div>
-        <div class="pie-leg-name" style="color:var(--muted)">ยังไม่ขายออก</div>
+        <div class="pie-leg-name" style="color:var(--muted)">สินค้าหลัก</div>
         <div class="pie-leg-val" style="color:var(--muted)">${remaining.toFixed(2)}%</div>
       </div>`);
     }
