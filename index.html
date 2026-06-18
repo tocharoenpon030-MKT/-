@@ -537,7 +537,8 @@ function parseOtherSheet(rows) {
 // ══════════════════════════════════════════════
 //  RENDER PAGE 1/2/3/4 (Overview)
 // ══════════════════════════════════════════════
-function renderOverview(data, contentId, subId, city) {
+function renderOverview(data, contentId, subId, city, remainingLabel) {
+  remainingLabel = remainingLabel || 'สินค้าหลัก';
   if (!data || !data.products || data.products.length === 0) {
     document.getElementById(contentId).innerHTML = '<div class="err-box">ไม่พบข้อมูลในรูปแบบที่คาดไว้ กรุณาตรวจสอบโครงสร้าง Sheet</div>';
     return;
@@ -799,7 +800,7 @@ function renderOverview(data, contentId, subId, city) {
       </path>`;
       legItems.push(`<div class="pie-leg-item">
         <div class="pie-leg-dot" style="background:#e5e7eb;border:1px solid #d1d5db"></div>
-        <div class="pie-leg-name" style="color:var(--muted)">สินค้าหลัก</div>
+        <div class="pie-leg-name" style="color:var(--muted)">${remainingLabel}</div>
         <div class="pie-leg-val" style="color:var(--muted)">${remaining.toFixed(2)}%</div>
       </div>`);
     }
@@ -1053,11 +1054,11 @@ async function loadData(force=false) {
     ]);
 
     // หน้า 1 · ภาพรวม กรุงเทพ
-    renderOverview(parseSummarySheet(bkkRows), 'bkk-content', 'bkk-sub', 'กรุงเทพ');
+    renderOverview(parseSummarySheet(bkkRows), 'bkk-content', 'bkk-sub', 'กรุงเทพ', 'สินค้าอื่น');
     // หน้า 2 · สินค้าอื่น กรุงเทพ
     renderOverview(parseOtherSheet(bkkOtherRows), 'bkk-other-content', 'bkk-other-sub', 'กรุงเทพ (สินค้าอื่น)');
     // หน้า 3 · ภาพรวม พัทยา
-    renderOverview(parseSummarySheet(pttRows), 'ptt-content', 'ptt-sub', 'พัทยา');
+    renderOverview(parseSummarySheet(pttRows), 'ptt-content', 'ptt-sub', 'พัทยา', 'สินค้าอื่น');
     // หน้า 4 · สินค้าอื่น พัทยา
     renderOverview(parseOtherSheet(pttOtherRows), 'ptt-other-content', 'ptt-other-sub', 'พัทยา (สินค้าอื่น)');
     // หน้า 5 · รายสินค้า กรุงเทพ
