@@ -212,12 +212,12 @@ tr.tot td.L { font-family:var(--font) }
   </div>
   <div class="nav-row2">
     <div class="nav-tabs">
-      <div class="nav-tab active" id="tab0" onclick="go(0)">หน้า 1 · กรุงเทพ</div>
+      <div class="nav-tab active" id="tab0" onclick="go(0)">หน้า 1 · สินค้าหลัก กรุงเทพ</div>
       <div class="nav-tab" id="tab1" onclick="go(1)">หน้า 2 · สินค้าอื่น กรุงเทพ</div>
-      <div class="nav-tab" id="tab2" onclick="go(2)">หน้า 3 · พัทยา</div>
+      <div class="nav-tab" id="tab2" onclick="go(2)">หน้า 3 · สินค้าหลัก พัทยา</div>
       <div class="nav-tab" id="tab3" onclick="go(3)">หน้า 4 · สินค้าอื่น พัทยา</div>
-      <div class="nav-tab" id="tab4" onclick="go(4)">หน้า 5 · สินค้า กรุงเทพ</div>
-      <div class="nav-tab" id="tab5" onclick="go(5)">หน้า 6 · สินค้า พัทยา</div>
+      <div class="nav-tab" id="tab4" onclick="go(4)">หน้า 5 · รายสินค้า กรุงเทพ</div>
+      <div class="nav-tab" id="tab5" onclick="go(5)">หน้า 6 · รายสินค้า พัทยา</div>
     </div>
   </div>
 </div>
@@ -1053,11 +1053,11 @@ async function loadData(force=false) {
       fetchSheet(GIDS.pttOther),
     ]);
 
-    // หน้า 1 · ภาพรวม กรุงเทพ
+    // หน้า 1 · สินค้าหลัก กรุงเทพ
     renderOverview(parseSummarySheet(bkkRows), 'bkk-content', 'bkk-sub', 'กรุงเทพ', 'สินค้าอื่น');
     // หน้า 2 · สินค้าอื่น กรุงเทพ
     renderOverview(parseOtherSheet(bkkOtherRows), 'bkk-other-content', 'bkk-other-sub', 'กรุงเทพ (สินค้าอื่น)');
-    // หน้า 3 · ภาพรวม พัทยา
+    // หน้า 3 · สินค้าหลัก พัทยา
     renderOverview(parseSummarySheet(pttRows), 'ptt-content', 'ptt-sub', 'พัทยา', 'สินค้าอื่น');
     // หน้า 4 · สินค้าอื่น พัทยา
     renderOverview(parseOtherSheet(pttOtherRows), 'ptt-other-content', 'ptt-other-sub', 'พัทยา (สินค้าอื่น)');
