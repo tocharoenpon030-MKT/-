@@ -20,8 +20,9 @@ body { font-family:var(--font); background:var(--surface); color:var(--text); fo
 .nav { background:#111827; display:flex; flex-direction:column; position:sticky; top:0; z-index:9999; box-shadow:0 2px 12px rgba(0,0,0,.4) }
 .nav-row1 { display:flex; align-items:center; width:100%; border-bottom:1px solid rgba(255,255,255,.08) }
 .nav-brand { color:var(--accent); font-size:.9rem; font-weight:700; padding:12px 18px; border-right:1px solid rgba(255,255,255,.1); white-space:nowrap; flex-shrink:0 }
-.nav-row2 { display:flex; width:100%; padding:0 8px 5px }
+.nav-row2 { display:flex; flex-direction:column; width:100%; padding:0 8px 5px }
 .nav-tabs { display:flex; width:100%; flex-wrap:wrap }
+.nav-tabs-r1 .nav-tab { flex:0 0 220px }
 .nav-tab { color:rgba(255,255,255,.7); padding:7px 4px; cursor:pointer; border:1px solid rgba(255,255,255,.2); border-radius:6px; white-space:nowrap; font-size:.75rem; font-weight:500; transition:all .15s; user-select:none; flex:1; text-align:center; margin:4px 3px; min-width:80px }
 .nav-tab:hover { color:#fff; background:rgba(255,255,255,.1); border-color:rgba(255,255,255,.35) }
 .nav-tab.active { color:#fff; background:rgba(224,123,30,.3); border-color:var(--accent); font-weight:700 }
@@ -231,65 +232,69 @@ tr.tot td.L { font-family:var(--font) }
     </div>
   </div>
   <div class="nav-row2">
-    <div class="nav-tabs">
-      <div class="nav-tab active" id="tab0" onclick="go(0)">หน้า 1 · สินค้าหลัก กรุงเทพ</div>
-      <div class="nav-tab" id="tab1" onclick="go(1)">หน้า 2 · สินค้าอื่น กรุงเทพ</div>
-      <div class="nav-tab" id="tab2" onclick="go(2)">หน้า 3 · สินค้าหลัก พัทยา</div>
-      <div class="nav-tab" id="tab3" onclick="go(3)">หน้า 4 · สินค้าอื่น พัทยา</div>
-      <div class="nav-tab" id="tab4" onclick="go(4)">หน้า 5 · รายสินค้า กรุงเทพ</div>
-      <div class="nav-tab" id="tab5" onclick="go(5)">หน้า 6 · รายสินค้า พัทยา</div>
-      <div class="nav-tab" id="tab6" onclick="go(6)">หน้า 7 · แจ้งเตือน</div>
+    <div class="nav-tabs nav-tabs-r1">
+      <div class="nav-tab active" id="tab0" onclick="go(0)">หน้า 1 · 🔔 แจ้งเตือน</div>
+    </div>
+    <div class="nav-tabs nav-tabs-r2">
+      <div class="nav-tab" id="tab1" onclick="go(1)">หน้า 2 · สินค้าหลัก กรุงเทพ</div>
+      <div class="nav-tab" id="tab2" onclick="go(2)">หน้า 3 · สินค้าอื่น กรุงเทพ</div>
+      <div class="nav-tab" id="tab3" onclick="go(3)">หน้า 4 · รายสินค้า กรุงเทพ</div>
+    </div>
+    <div class="nav-tabs nav-tabs-r3">
+      <div class="nav-tab" id="tab4" onclick="go(4)">หน้า 5 · สินค้าหลัก พัทยา</div>
+      <div class="nav-tab" id="tab5" onclick="go(5)">หน้า 6 · สินค้าอื่น พัทยา</div>
+      <div class="nav-tab" id="tab6" onclick="go(6)">หน้า 7 · รายสินค้า พัทยา</div>
     </div>
   </div>
 </div>
 
-<!-- PAGE 1 -->
+<!-- PAGE 1 · แจ้งเตือน -->
 <div class="page active" id="p0">
+  <div class="page-title">แจ้งเตือนรายการที่กำไร/ยอดขายลดลง</div>
+  <div class="page-sub">เทียบเดือนล่าสุดกับเดือนก่อนหน้า (MoM) และเดือนเดียวกันปีก่อน (YoY) · สินค้าหลัก + สินค้าอื่น</div>
+  <div id="alert-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูล...</span></div></div>
+</div>
+
+<!-- PAGE 2 · สินค้าหลัก กรุงเทพ -->
+<div class="page" id="p1">
   <div class="page-title">ภาพรวมกำไร — กรุงเทพ</div>
   <div class="page-sub" id="bkk-sub">กำลังโหลดข้อมูล...</div>
   <div id="bkk-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูลจาก Google Sheets...</span></div></div>
 </div>
 
-<!-- PAGE 2 -->
-<div class="page" id="p1">
+<!-- PAGE 3 · สินค้าอื่น กรุงเทพ -->
+<div class="page" id="p2">
   <div class="page-title">ภาพรวมสินค้าอื่น — กรุงเทพ</div>
   <div class="page-sub" id="bkk-other-sub">กำลังโหลดข้อมูล...</div>
   <div id="bkk-other-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูล...</span></div></div>
 </div>
 
-<!-- PAGE 3 -->
-<div class="page" id="p2">
-  <div class="page-title">ภาพรวมกำไร — พัทยา</div>
-  <div class="page-sub" id="ptt-sub">กำลังโหลดข้อมูล...</div>
-  <div id="ptt-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูลจาก Google Sheets...</span></div></div>
-</div>
-
-<!-- PAGE 4 -->
+<!-- PAGE 4 · รายสินค้า กรุงเทพ -->
 <div class="page" id="p3">
-  <div class="page-title">ภาพรวมสินค้าอื่น — พัทยา</div>
-  <div class="page-sub" id="ptt-other-sub">กำลังโหลดข้อมูล...</div>
-  <div id="ptt-other-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูล...</span></div></div>
-</div>
-
-<!-- PAGE 5 -->
-<div class="page" id="p4">
   <div class="page-title">รายสินค้า — กรุงเทพ</div>
   <div class="page-sub">รายละเอียดรายสินค้าแยกตามกลุ่ม · หน่วย: บาท</div>
   <div id="bkk-detail-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูล...</span></div></div>
 </div>
 
-<!-- PAGE 6 -->
+<!-- PAGE 5 · สินค้าหลัก พัทยา -->
+<div class="page" id="p4">
+  <div class="page-title">ภาพรวมกำไร — พัทยา</div>
+  <div class="page-sub" id="ptt-sub">กำลังโหลดข้อมูล...</div>
+  <div id="ptt-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูลจาก Google Sheets...</span></div></div>
+</div>
+
+<!-- PAGE 6 · สินค้าอื่น พัทยา -->
 <div class="page" id="p5">
+  <div class="page-title">ภาพรวมสินค้าอื่น — พัทยา</div>
+  <div class="page-sub" id="ptt-other-sub">กำลังโหลดข้อมูล...</div>
+  <div id="ptt-other-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูล...</span></div></div>
+</div>
+
+<!-- PAGE 7 · รายสินค้า พัทยา -->
+<div class="page" id="p6">
   <div class="page-title">รายสินค้า — พัทยา</div>
   <div class="page-sub">รายละเอียดรายสินค้าแยกตามกลุ่ม · หน่วย: บาท</div>
   <div id="ptt-detail-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูล...</span></div></div>
-</div>
-
-<!-- PAGE 7 -->
-<div class="page" id="p6">
-  <div class="page-title">แจ้งเตือนรายการที่กำไร/ยอดขายลดลง</div>
-  <div class="page-sub">เทียบเดือนล่าสุดกับเดือนก่อนหน้า (MoM) และเดือนเดียวกันปีก่อน (YoY) · เฉพาะสินค้าหลัก</div>
-  <div id="alert-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูล...</span></div></div>
 </div>
 
 <script>
@@ -456,9 +461,9 @@ function parseOtherSheet(rows) {
   if (!rows || rows.length < 2) return null;
 
   // header row[0]: detect column mapping
-  // แต่ละเดือนมี 6 คอลัมน์ เริ่มที่ col index 4 (E=0-based)
-  // เดือนที่ m (0-based): startCol = 4 + m*6
-  // offset: 0=ต้นทุน, 1=ราคาขาย, 2=จำนวน, 3=กำไร/ชิ้น, 4=กำไรรวม, 5=สัดส่วน
+  // แต่ละเดือนมี 7 คอลัมน์ เริ่มที่ col index 4 (E=0-based)
+  // เดือนที่ m (0-based): startCol = 4 + m*7
+  // offset: 0=ต้นทุน, 1=ราคาขาย, 2=จำนวน, 3=กำไร/ชิ้น, 4=กำไรรวม, 5=สัดส่วน, 6=ยอดขายเซล
 
   const TOTAL_MONTHS = 24; // 12เดือน×2ปี (2568+2569)
   const dataRows = rows.slice(1).filter(r => r[1] || r[2]); // skip header, keep rows with name or group
@@ -472,10 +477,10 @@ function parseOtherSheet(rows) {
   }
 
   // นับเดือนที่มีข้อมูล (กำไรรวม col I = offset 4)
-  // เดือน m (0-based): colIdx = 4 + m*6 + 4 = 8 + m*6
+  // เดือน m (0-based): colIdx = 4 + m*7 + 4 = 8 + m*7
   let nM = 0;
   for (let m = 0; m < TOTAL_MONTHS; m++) {
-    const profitCol = 4 + m*6 + 4;
+    const profitCol = 4 + m*7 + 4;
     const hasData = dataRows.some(r => {
       const v = n(r[profitCol]);
       return v !== null && v !== 0;
@@ -502,7 +507,7 @@ function parseOtherSheet(rows) {
     const grp = String(r[2]||'').trim();
     if (!grp || !groupData[grp]) continue;
     for (let m = 0; m < TOTAL_MONTHS; m++) {
-      const baseCol = 4 + m * 6;
+      const baseCol = 4 + m * 7;
       const profit  = n(r[baseCol + 4]) || 0;
       const ratio   = n(r[baseCol + 5]) || 0;
       if (m < 12) {
@@ -862,80 +867,86 @@ function renderOverview(data, contentId, subId, city, remainingLabel) {
 // ══════════════════════════════════════════════
 //  RENDER DETAIL (หน้า 5/6) — มี toggle สินค้าหลัก/อื่น
 // ══════════════════════════════════════════════
+// Parse main detail (โครงสร้างเดิม) — ใช้ร่วมกันทั้งหน้า 4/7 และหน้าแจ้งเตือน
+function parseMainDetail(rows) {
+  if (!rows || rows.length < 2) return {};
+  const dataRows = rows.slice(1).filter(r => r[0] && r[3]);
+  const grouped = {};
+  for (const r of dataRows) {
+    const grp = r[0]||''; const mon = n(r[1])||0; const sku = r[2]||'';
+    const desc = r[3]||''; const unit = r[4]||'';
+    const cost68=n(r[5]); const cost69=n(r[6]);
+    const qty68=n(r[7]); const qty69=n(r[8]);
+    const profit68=n(r[10]); const profit69=n(r[11]);
+    const price68=n(r[12]); const price69=n(r[13]);
+    const sale68=n(r[14]); const sale69=n(r[15]);
+    if (!grouped[grp]) grouped[grp]={};
+    const key=`${sku}__${desc}__${unit}`;
+    if (!grouped[grp][key]) grouped[grp][key]={sku,desc,unit,months:{}};
+    if (!grouped[grp][key].months[mon]) grouped[grp][key].months[mon]={};
+    const m=grouped[grp][key].months[mon];
+    m.cost68=cost68; m.cost69=cost69; m.price68=price68; m.price69=price69;
+    m.qty68=(m.qty68||0)+(qty68||0); m.qty69=(m.qty69||0)+(qty69||0);
+    m.profit68=(m.profit68||0)+(profit68||0); m.profit69=(m.profit69||0)+(profit69||0);
+    m.sale68=(m.sale68||0)+(sale68||0); m.sale69=(m.sale69||0)+(sale69||0);
+  }
+  return grouped;
+}
+
+// Parse other detail (โครงสร้างใหม่)
+// A=รหัส, B=ชื่อ, C=กลุ่มใหญ่, D=กลุ่มย่อย, เดือน m (1-based): baseCol=4+(m-1)*7
+// offset: 0=ต้นทุน, 1=ราคาขาย, 2=จำนวน, 3=กำไร/ชิ้น, 4=กำไรรวม, 5=สัดส่วน, 6=ยอดขายเซล
+function parseOtherDetail(rows) {
+  if (!rows || rows.length < 2) return {};
+  const dataRows = rows.slice(1).filter(r => r[1] || r[2]);
+  const grouped = {};
+  for (const r of dataRows) {
+    const grp = String(r[2]||'').trim();
+    if (!grp) continue;
+    if (!grouped[grp]) grouped[grp] = {};
+    const sku = String(r[0]||'').trim();
+    const desc = String(r[1]||'').trim();
+    const key = `${sku}__${desc}`;
+    if (!grouped[grp][key]) grouped[grp][key] = {sku, desc, unit:'', months:{}};
+    // เดือน 1–12 ปี 2568
+    for (let m = 1; m <= 12; m++) {
+      const baseCol = 4 + (m-1)*7;
+      const cost68  = n(r[baseCol]);
+      const price68 = n(r[baseCol+1]);
+      const qty68   = n(r[baseCol+2]);
+      const gpu68   = n(r[baseCol+3]);
+      const profit68= n(r[baseCol+4]);
+      const sale68  = n(r[baseCol+6]);
+      if (!grouped[grp][key].months[m]) grouped[grp][key].months[m] = {};
+      const md = grouped[grp][key].months[m];
+      md.cost68   = cost68;
+      md.price68  = price68;
+      md.qty68    = (md.qty68||0) + (qty68||0);
+      md.profit68 = (md.profit68||0) + (profit68||0);
+      md.sale68   = (md.sale68||0) + (sale68||0);
+    }
+    // เดือน 1–12 ปี 2569 (offset +84 คอลัมน์จาก E = col 4+84=88)
+    for (let m = 1; m <= 12; m++) {
+      const baseCol = 4 + 12*7 + (m-1)*7;
+      const cost69  = n(r[baseCol]);
+      const price69 = n(r[baseCol+1]);
+      const qty69   = n(r[baseCol+2]);
+      const gpu69   = n(r[baseCol+3]);
+      const profit69= n(r[baseCol+4]);
+      const sale69  = n(r[baseCol+6]);
+      if (!grouped[grp][key].months[m]) grouped[grp][key].months[m] = {};
+      const md = grouped[grp][key].months[m];
+      md.cost69   = cost69;
+      md.price69  = price69;
+      md.qty69    = (md.qty69||0) + (qty69||0);
+      md.profit69 = (md.profit69||0) + (profit69||0);
+      md.sale69   = (md.sale69||0) + (sale69||0);
+    }
+  }
+  return grouped;
+}
+
 function renderDetail(mainRows, otherRows, contentId, city) {
-  // Parse main detail (โครงสร้างเดิม)
-  function parseMainDetail(rows) {
-    if (!rows || rows.length < 2) return {};
-    const dataRows = rows.slice(1).filter(r => r[0] && r[3]);
-    const grouped = {};
-    for (const r of dataRows) {
-      const grp = r[0]||''; const mon = n(r[1])||0; const sku = r[2]||'';
-      const desc = r[3]||''; const unit = r[4]||'';
-      const cost68=n(r[5]); const cost69=n(r[6]);
-      const qty68=n(r[7]); const qty69=n(r[8]);
-      const profit68=n(r[10]); const profit69=n(r[11]);
-      const price68=n(r[12]); const price69=n(r[13]);
-      if (!grouped[grp]) grouped[grp]={};
-      const key=`${sku}__${desc}__${unit}`;
-      if (!grouped[grp][key]) grouped[grp][key]={sku,desc,unit,months:{}};
-      if (!grouped[grp][key].months[mon]) grouped[grp][key].months[mon]={};
-      const m=grouped[grp][key].months[mon];
-      m.cost68=cost68; m.cost69=cost69; m.price68=price68; m.price69=price69;
-      m.qty68=(m.qty68||0)+(qty68||0); m.qty69=(m.qty69||0)+(qty69||0);
-      m.profit68=(m.profit68||0)+(profit68||0); m.profit69=(m.profit69||0)+(profit69||0);
-    }
-    return grouped;
-  }
-
-  // Parse other detail (โครงสร้างใหม่)
-  // A=รหัส, B=ชื่อ, C=กลุ่ม, เดือน m (1-based): baseCol=4+(m-1)*6
-  // offset: 0=ต้นทุน, 1=ราคาขาย, 2=จำนวน, 3=กำไร/ชิ้น, 4=กำไรรวม, 5=สัดส่วน
-  function parseOtherDetail(rows) {
-    if (!rows || rows.length < 2) return {};
-    const dataRows = rows.slice(1).filter(r => r[1] || r[2]);
-    const grouped = {};
-    for (const r of dataRows) {
-      const grp = String(r[2]||'').trim();
-      if (!grp) continue;
-      if (!grouped[grp]) grouped[grp] = {};
-      const sku = String(r[0]||'').trim();
-      const desc = String(r[1]||'').trim();
-      const key = `${sku}__${desc}`;
-      if (!grouped[grp][key]) grouped[grp][key] = {sku, desc, unit:'', months:{}};
-      // เดือน 1–12 ปี 2568
-      for (let m = 1; m <= 12; m++) {
-        const baseCol = 4 + (m-1)*6;
-        const cost68  = n(r[baseCol]);
-        const price68 = n(r[baseCol+1]);
-        const qty68   = n(r[baseCol+2]);
-        const gpu68   = n(r[baseCol+3]);
-        const profit68= n(r[baseCol+4]);
-        if (!grouped[grp][key].months[m]) grouped[grp][key].months[m] = {};
-        const md = grouped[grp][key].months[m];
-        md.cost68   = cost68;
-        md.price68  = price68;
-        md.qty68    = (md.qty68||0) + (qty68||0);
-        md.profit68 = (md.profit68||0) + (profit68||0);
-      }
-      // เดือน 1–12 ปี 2569 (offset +72 คอลัมน์จาก E = col 4+72=76)
-      for (let m = 1; m <= 12; m++) {
-        const baseCol = 4 + 12*6 + (m-1)*6;
-        const cost69  = n(r[baseCol]);
-        const price69 = n(r[baseCol+1]);
-        const qty69   = n(r[baseCol+2]);
-        const gpu69   = n(r[baseCol+3]);
-        const profit69= n(r[baseCol+4]);
-        if (!grouped[grp][key].months[m]) grouped[grp][key].months[m] = {};
-        const md = grouped[grp][key].months[m];
-        md.cost69   = cost69;
-        md.price69  = price69;
-        md.qty69    = (md.qty69||0) + (qty69||0);
-        md.profit69 = (md.profit69||0) + (profit69||0);
-      }
-    }
-    return grouped;
-  }
-
   const mainGrouped  = parseMainDetail(mainRows);
   const otherGrouped = parseOtherDetail(otherRows);
 
@@ -1065,71 +1076,71 @@ function renderDetail(mainRows, otherRows, contentId, city) {
 // ══════════════════════════════════════════════
 //  PARSE + RENDER ALERT PAGE (หน้า 7)
 // ══════════════════════════════════════════════
-function parseAlertItems(rows) {
-  // ใช้โครงสร้างเดียวกับ parseMainDetail: A=กลุ่ม,B=เดือน,C=รหัส,D=รายละเอียด,E=หน่วย,
-  // F=ต้นทุน68,G=ต้นทุน69,H=จำนวน68,I=จำนวน69,K=กำไรรวม68,L=กำไรรวม69,M=ราคา68,N=ราคา69,O=ยอดเซล68,P=ยอดเซล69
-  if (!rows || rows.length < 2) return [];
-  const dataRows = rows.slice(1).filter(r => r[0] && r[3]);
-  const items = {};
-  for (const r of dataRows) {
-    const grp = r[0]||''; const mon = n(r[1])||0; const sku = r[2]||''; const desc = r[3]||'';
-    const key = `${sku}__${desc}`;
-    if (!items[key]) items[key] = { grp, desc, months: {} };
-    if (!items[key].months[mon]) items[key].months[mon] = {
-      cost68:0,cost69:0,price68:n(r[12]),price69:n(r[13]),
-      qty68:0,qty69:0,profit68:0,profit69:0,sale68:0,sale69:0
-    };
-    const m = items[key].months[mon];
-    m.cost68 = n(r[5]); m.cost69 = n(r[6]);
-    m.price68 = n(r[12]); m.price69 = n(r[13]);
-    m.qty68 += (n(r[7])||0); m.qty69 += (n(r[8])||0);
-    m.profit68 += (n(r[10])||0); m.profit69 += (n(r[11])||0);
-    m.sale68 += (n(r[14])||0); m.sale69 += (n(r[15])||0);
+function pctChange(cur, prev) {
+  return (prev===null||prev===undefined||prev===0||cur===null||cur===undefined) ? null : (cur-prev)/Math.abs(prev)*100;
+}
+
+// months: { [mon 1-12]: {cost68,cost69,price68,price69,qty68,qty69,profit68,profit69,sale68,sale69} }
+// ใช้ร่วมกันทั้งสินค้าหลัก (parseMainDetail) และสินค้าอื่น (parseOtherDetail)
+function computeAlertItem(grp, desc, months) {
+  let lastMon = 0;
+  for (let m=1; m<=12; m++) { if (months[m] && (months[m].qty69||0) > 0) lastMon = m; }
+  if (!lastMon) return null;
+  const cur = months[lastMon];
+  const curGpu = (cur.price69!=null && cur.cost69!=null) ? cur.price69-cur.cost69 : null;
+
+  // YoY: เดือนเดียวกัน ปีก่อน
+  const yoyGpu = (cur.price68!=null && cur.cost68!=null) ? cur.price68-cur.cost68 : null;
+  const yoy = {
+    gpu: pctChange(curGpu, yoyGpu),
+    profit: pctChange(cur.profit69, cur.profit68),
+    qty: pctChange(cur.qty69, cur.qty68),
+    sale: pctChange(cur.sale69, cur.sale68)
+  };
+
+  // MoM: เดือนก่อนหน้า (ถ้าเดือน1 ใช้ ธ.ค. ปีก่อนแทน)
+  let prevGpu=null, prevProfit=null, prevQty=null, prevSale=null;
+  if (lastMon > 1 && months[lastMon-1]) {
+    const p = months[lastMon-1];
+    prevGpu = (p.price69!=null && p.cost69!=null) ? p.price69-p.cost69 : null;
+    prevProfit = p.profit69; prevQty = p.qty69; prevSale = p.sale69;
+  } else if (months[12]) {
+    const p = months[12];
+    prevGpu = (p.price68!=null && p.cost68!=null) ? p.price68-p.cost68 : null;
+    prevProfit = p.profit68; prevQty = p.qty68; prevSale = p.sale68;
   }
+  const mom = {
+    gpu: pctChange(curGpu, prevGpu),
+    profit: pctChange(cur.profit69, prevProfit),
+    qty: pctChange(cur.qty69, prevQty),
+    sale: pctChange(cur.sale69, prevSale)
+  };
 
-  const pct = (cur, prev) => (prev===null||prev===undefined||prev===0||cur===null||cur===undefined) ? null : (cur-prev)/Math.abs(prev)*100;
+  return { grp, desc, lastMon, gpu: curGpu, profit: cur.profit69, qty: cur.qty69, sale: cur.sale69, mom, yoy };
+}
 
+function parseAlertItems(rows) {
+  const grouped = parseMainDetail(rows);
   const out = [];
-  for (const key in items) {
-    const it = items[key];
-    let lastMon = 0;
-    for (let m=1; m<=12; m++) { if (it.months[m] && (it.months[m].qty69||0) > 0) lastMon = m; }
-    if (!lastMon) continue;
-    const cur = it.months[lastMon];
-    const curGpu = (cur.price69!=null && cur.cost69!=null) ? cur.price69-cur.cost69 : null;
-
-    // YoY: เดือนเดียวกัน ปีก่อน
-    const yoyGpu = (cur.price68!=null && cur.cost68!=null) ? cur.price68-cur.cost68 : null;
-    const yoy = {
-      gpu: pct(curGpu, yoyGpu),
-      profit: pct(cur.profit69, cur.profit68),
-      qty: pct(cur.qty69, cur.qty68),
-      sale: pct(cur.sale69, cur.sale68)
-    };
-
-    // MoM: เดือนก่อนหน้า (ถ้าเดือน1 ใช้ ธ.ค. ปีก่อนแทน)
-    let prevGpu=null, prevProfit=null, prevQty=null, prevSale=null;
-    if (lastMon > 1 && it.months[lastMon-1]) {
-      const p = it.months[lastMon-1];
-      prevGpu = (p.price69!=null && p.cost69!=null) ? p.price69-p.cost69 : null;
-      prevProfit = p.profit69; prevQty = p.qty69; prevSale = p.sale69;
-    } else if (it.months[12]) {
-      const p = it.months[12];
-      prevGpu = (p.price68!=null && p.cost68!=null) ? p.price68-p.cost68 : null;
-      prevProfit = p.profit68; prevQty = p.qty68; prevSale = p.sale68;
+  for (const grp in grouped) {
+    for (const key in grouped[grp]) {
+      const it = grouped[grp][key];
+      const alertItem = computeAlertItem(grp, it.desc, it.months);
+      if (alertItem) out.push(alertItem);
     }
-    const mom = {
-      gpu: pct(curGpu, prevGpu),
-      profit: pct(cur.profit69, prevProfit),
-      qty: pct(cur.qty69, prevQty),
-      sale: pct(cur.sale69, prevSale)
-    };
+  }
+  return out;
+}
 
-    out.push({
-      key, grp: it.grp, desc: it.desc, lastMon,
-      gpu: curGpu, profit: cur.profit69, qty: cur.qty69, sale: cur.sale69,
-      mom, yoy
-    });
+function parseAlertItemsOther(rows) {
+  const grouped = parseOtherDetail(rows);
+  const out = [];
+  for (const grp in grouped) {
+    for (const key in grouped[grp]) {
+      const it = grouped[grp][key];
+      const alertItem = computeAlertItem(grp, it.desc, it.months);
+      if (alertItem) out.push(alertItem);
+    }
   }
   return out;
 }
@@ -1168,9 +1179,9 @@ function alertPctHtml(v) {
   return `<span class="v ${cls}">${v>=0?'+':''}${v.toFixed(1)}%</span>`;
 }
 
-function renderAlertPage(bkkRows, pttRows, contentId) {
-  const itemsBkk = parseAlertItems(bkkRows);
-  const itemsPtt = parseAlertItems(pttRows);
+function renderAlertPage(bkkMainRows, pttMainRows, bkkOtherRows, pttOtherRows, contentId) {
+  const itemsBkk = parseAlertItems(bkkMainRows).concat(parseAlertItemsOther(bkkOtherRows));
+  const itemsPtt = parseAlertItems(pttMainRows).concat(parseAlertItemsOther(pttOtherRows));
   let activeCity = 'bkk';
 
   function getItems() { return activeCity==='bkk' ? itemsBkk : itemsPtt; }
@@ -1285,8 +1296,8 @@ async function loadData(force=false) {
     renderDetail(bkkDetailRows, bkkOtherRows, 'bkk-detail-content', 'กรุงเทพ');
     // หน้า 6 · รายสินค้า พัทยา
     renderDetail(pttDetailRows, pttOtherRows, 'ptt-detail-content', 'พัทยา');
-    // หน้า 7 · แจ้งเตือน
-    renderAlertPage(bkkDetailRows, pttDetailRows, 'alert-content');
+    // หน้า · แจ้งเตือน
+    renderAlertPage(bkkDetailRows, pttDetailRows, bkkOtherRows, pttOtherRows, 'alert-content');
 
     dataCache = true;
   } catch(e) {
