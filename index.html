@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>สรุปกำไรขาย · Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root {
   --bg:#ffffff; --surface:#f8f9fa; --surface2:#f0f2f4; --border:#e2e6ea;
@@ -197,6 +198,11 @@ tr.tot td.L { font-family:var(--font) }
 .alert-field input { width:64px; padding:5px 7px; border:1px solid var(--border); border-radius:6px; font-family:var(--mono); font-size:.78rem }
 .alert-leg { margin-left:auto; display:flex; gap:14px; font-size:.7rem; color:var(--muted); align-items:center }
 .alert-sec-title { font-size:.84rem; font-weight:700; margin:18px 0 8px; padding-left:10px; border-left:3px solid var(--accent); display:flex; align-items:center; gap:8px }
+.alert-sec-toggle { font-size:.84rem; font-weight:700; margin:18px 0 8px; padding:8px 10px; border-left:3px solid var(--accent); background:var(--surface); border-radius:6px; display:flex; align-items:center; gap:8px; cursor:pointer; user-select:none }
+.alert-sec-toggle:hover { background:var(--surface2) }
+.alert-sec-toggle .arrow { font-size:.7rem; color:var(--muted) }
+.alert-sec-body { display:none }
+.alert-sec-body.open { display:block }
 .alert-row { display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--border); border-radius:8px; margin-bottom:6px; background:var(--bg); flex-wrap:wrap }
 .alert-name { flex:1; min-width:180px }
 .alert-name .nm { font-size:.83rem; font-weight:600 }
@@ -1145,32 +1151,36 @@ function parseAlertItemsOther(rows) {
   return out;
 }
 
-function classifyAlert(item) {
-  const { gpu, profit, qty, sale } = item.mom;
+function classifyAlert(item, thGpu, thProfit, thSale) {
+  const { gpu, profit, sale } = item.mom;
+  const gpuDown = gpu!==null && gpu <= -thGpu;
+  const profitDown = profit!==null && profit <= -thProfit;
+  const saleDown = sale!==null && sale <= -thSale;
+
+  let urgency, label;
+  if (gpuDown && profitDown && saleDown) { urgency='red'; label='เร่งด่วน'; }
+  else if (!gpuDown && profitDown && saleDown) { urgency='red'; label='เร่งด่วน'; }
+  else if (gpuDown && profitDown && !saleDown) { urgency='orange'; label='ควรดู'; }
+  else if (!gpuDown && !profitDown && saleDown) { urgency='orange'; label='ควรดู'; }
+  else if (gpuDown && !profitDown && saleDown) { urgency='orange'; label='ควรดู'; }
+  else if (gpuDown && !profitDown && !saleDown) { urgency='yellow'; label='ค่อยดู'; }
+  else { urgency='gray'; label='ปกติ'; }
+
   let main = '';
-  if (gpu!==null && qty!==null && gpu<0 && qty<0) {
-    main = 'ตรวจสอบสาเหตุอื่น ไม่ใช่ราคา';
-  } else if (gpu!==null && qty!==null && profit!==null && gpu<0 && qty>0 && profit<0) {
-    main = 'ลดราคาเกินไป ทบทวนส่วนลด';
-  } else if (gpu!==null && qty!==null && profit!==null && gpu<0 && qty>0 && profit>=0) {
-    main = 'โอเค ราคาที่ลดช่วยดันยอดขาย';
-  } else if (gpu!==null && qty!==null && sale!==null && gpu>0 && qty<0 && sale<0) {
-    main = 'พิจารณาปรับราคาลง / ทบทวนการขึ้นราคา';
-  } else if (gpu!==null && qty!==null && profit!==null && gpu>=0 && qty>=0 && profit>=0) {
-    main = 'ดีต่อเนื่อง ไม่ต้องทำอะไร';
-  }
-  let note = '';
-  if (qty!==null && sale!==null) {
-    if (qty<0 && sale<0) note = 'ยอดเซลก็ลดด้วย ยิ่งน่าเป็นห่วง';
-    else if (qty<0 && sale>=0) note = 'ยอดเซลยังโต ปัญหาอาจเฉพาะช่องทางอื่น';
-    else if (qty>=0 && sale<0) note = 'ระวัง ยอดเซลเริ่มลดทั้งที่ภาพรวมยังดี';
-    else if (qty>=0 && sale>=0) note = 'ยอดเซลก็เพิ่มด้วย ยืนยันเทรนด์จริง';
-  }
+  if (gpuDown && profitDown && saleDown) main = 'แย่ทุกด้าน ตรวจสอบสาเหตุด่วน';
+  else if (!gpuDown && profitDown && saleDown) main = 'พิจารณาปรับราคาลง / ทบทวนการขึ้นราคา';
+  else if (gpuDown && profitDown && !saleDown) main = 'ลดราคาเกินไป ทบทวนส่วนลด';
+  else if (!gpuDown && !profitDown && saleDown) main = 'กำไรยังดี แต่ยอดเซลเริ่มหด เฝ้าระวัง';
+  else if (gpuDown && !profitDown && !saleDown) main = 'ลดราคาได้ผล กำไรรวมและยอดเซลยังโต';
+  else if (!gpuDown && !profitDown && !saleDown) main = 'ดีต่อเนื่อง ไม่ต้องทำอะไร';
+  else main = 'ตัวเลขขัดแย้งกัน ควรตรวจสอบ';
+
   let badge = '';
+  const { qty } = item.mom;
   if (gpu!==null && qty!==null && gpu>=10 && qty<=-10) {
     badge = sale!==null && sale<0 ? 'danger' : 'warn';
   }
-  return { main, note, badge };
+  return { urgency, label, main, badge };
 }
 
 function alertPctHtml(v) {
@@ -1183,65 +1193,98 @@ function renderAlertPage(bkkMainRows, pttMainRows, bkkOtherRows, pttOtherRows, c
   const itemsBkk = parseAlertItems(bkkMainRows).concat(parseAlertItemsOther(bkkOtherRows));
   const itemsPtt = parseAlertItems(pttMainRows).concat(parseAlertItemsOther(pttOtherRows));
   let activeCity = 'bkk';
+  let lastClassified = []; // เก็บผลลัพธ์ล่าสุดไว้ใช้ export
 
   function getItems() { return activeCity==='bkk' ? itemsBkk : itemsPtt; }
 
-  function buildRow(item, kind) {
-    const c = classifyAlert(item);
-    let mainVal = '';
-    if (kind==='gpu') mainVal = fmt2(item.gpu)+' /หน่วย';
-    if (kind==='profit') mainVal = fmt(item.profit)+' บาท';
-    if (kind==='qty') mainVal = fmt(item.qty)+' หน่วย';
-    if (kind==='sale') mainVal = fmt(item.sale)+' บาท';
+  function buildRow(entry) {
+    const item = entry.item;
+    const c = entry.c;
     let badgeHtml = '';
     if (c.badge==='warn') badgeHtml += `<span class="alert-badge ab-warn">ขึ้นราคา ลูกค้าหาย</span>`;
     if (c.badge==='danger') badgeHtml += `<span class="alert-badge ab-warn">ขึ้นราคา ลูกค้าหาย</span><span class="alert-badge ab-danger">ไม่ยั่งยืน</span>`;
-    let sugText = c.main;
-    if (c.note) sugText += (sugText ? ' ' : '') + `(${c.note})`;
     return `<div class="alert-row">
       <div class="alert-name">
         <div class="nm">${item.desc}${badgeHtml}</div>
-        <div class="grp">${item.grp} · เดือน ${MONTHS_TH[item.lastMon-1]}/2569 · ${mainVal}</div>
-        ${sugText ? `<div class="sug">💡 ${sugText}</div>` : ''}
+        <div class="grp">${item.grp} · เดือน ${MONTHS_TH[item.lastMon-1]}/2569</div>
+        <div class="sug">💡 ${c.main}</div>
       </div>
-      <div class="alert-pct">${alertPctHtml(item.mom[kind])}<div class="lbl">MoM</div></div>
-      <div class="alert-pct">${alertPctHtml(item.yoy[kind])}<div class="lbl">YoY</div></div>
+      <div class="alert-pct">${alertPctHtml(item.mom.gpu)}<div class="lbl">กำไร/หน่วย MoM</div></div>
+      <div class="alert-pct">${alertPctHtml(item.mom.profit)}<div class="lbl">กำไรรวม MoM</div></div>
+      <div class="alert-pct">${alertPctHtml(item.mom.sale)}<div class="lbl">ยอดเซล MoM</div></div>
     </div>`;
   }
 
-  function buildSection(title, icon, items, kind) {
-    if (!items.length) return `<div class="alert-sec-title">${icon} ${title} (0)</div><div class="alert-empty">ไม่มีรายการเข้าเกณฑ์</div>`;
-    return `<div class="alert-sec-title">${icon} ${title} (${items.length})</div>` + items.map(it=>buildRow(it,kind)).join('');
+  function buildSection(secId, icon, title, entries, defaultOpen) {
+    const openCls = defaultOpen ? ' open' : '';
+    const arrow = defaultOpen ? '▾' : '▸';
+    if (!entries.length) {
+      return `<div class="alert-sec-toggle${openCls}" data-sec="${secId}">
+        <span class="arrow">${arrow}</span> ${icon} ${title} (0)
+      </div><div class="alert-sec-body${openCls}" id="sec-${secId}"><div class="alert-empty">ไม่มีรายการเข้าเกณฑ์</div></div>`;
+    }
+    return `<div class="alert-sec-toggle${openCls}" data-sec="${secId}">
+      <span class="arrow">${arrow}</span> ${icon} ${title} (${entries.length})
+    </div><div class="alert-sec-body${openCls}" id="sec-${secId}">${entries.map(buildRow).join('')}</div>`;
   }
 
   function renderLists() {
     const thGpu = parseFloat(document.getElementById('th-gpu').value)||0;
     const thProfit = parseFloat(document.getElementById('th-profit').value)||0;
-    const thQty = parseFloat(document.getElementById('th-qty').value)||0;
     const thSale = parseFloat(document.getElementById('th-sale').value)||0;
     const items = getItems();
 
-    const gpuDown = items.filter(it => it.mom.gpu!==null && it.mom.gpu <= -thGpu);
-    const profitDown = items.filter(it => it.mom.profit!==null && it.mom.profit <= -thProfit);
-    const qtyDown = items.filter(it => it.mom.qty!==null && it.mom.qty <= -thQty);
-    const saleDown = items.filter(it => it.mom.sale!==null && it.mom.sale <= -thSale);
+    const classified = items.map(item => ({ item, c: classifyAlert(item, thGpu, thProfit, thSale) }));
+    lastClassified = classified;
+
+    const red    = classified.filter(e=>e.c.urgency==='red');
+    const orange = classified.filter(e=>e.c.urgency==='orange');
+    const yellow = classified.filter(e=>e.c.urgency==='yellow');
+    const gray   = classified.filter(e=>e.c.urgency==='gray');
 
     document.getElementById(contentId+'-lists').innerHTML =
-      buildSection('กำไร/หน่วยลดลง','📉', gpuDown, 'gpu') +
-      buildSection('กำไรรวมลดลง','💰', profitDown, 'profit') +
-      buildSection('จำนวนขายลดลง','📦', qtyDown, 'qty') +
-      buildSection('ยอดขายเซลลดลง','🏷️', saleDown, 'sale');
+      buildSection('red','🔴','เร่งด่วน', red, true) +
+      buildSection('orange','🟠','ควรดู', orange, true) +
+      buildSection('yellow','🟡','ค่อยดู', yellow, false) +
+      buildSection('gray','⚪','ปกติ', gray, false);
+
+    document.querySelectorAll('.alert-sec-toggle').forEach(el=>{
+      el.onclick = function(){
+        const body = document.getElementById('sec-'+this.dataset.sec);
+        const willOpen = !this.classList.contains('open');
+        this.classList.toggle('open', willOpen);
+        body.classList.toggle('open', willOpen);
+        this.querySelector('.arrow').textContent = willOpen ? '▾' : '▸';
+      };
+    });
+  }
+
+  function exportXlsx() {
+    const rows = [['กลุ่มสินค้า','รายการ','ระดับ','กำไร/หน่วย MoM %','กำไรรวม MoM %','จำนวนขาย MoM %','ยอดขายเซล MoM %','กำไร/หน่วย YoY %','กำไรรวม YoY %','จำนวนขาย YoY %','ยอดขายเซล YoY %','ข้อเสนอแนะ']];
+    lastClassified.forEach(({item,c})=>{
+      rows.push([
+        item.grp, item.desc, c.label,
+        item.mom.gpu, item.mom.profit, item.mom.qty, item.mom.sale,
+        item.yoy.gpu, item.yoy.profit, item.yoy.qty, item.yoy.sale,
+        c.main
+      ]);
+    });
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'แจ้งเตือน');
+    const cityLabel = activeCity==='bkk' ? 'กรุงเทพ' : 'พัทยา';
+    XLSX.writeFile(wb, `แจ้งเตือนกำไรขาย-${cityLabel}.xlsx`);
   }
 
   document.getElementById(contentId).innerHTML = `
     <div class="grp-filter">
       <button class="grp-btn active" id="${contentId}-city-bkk">กรุงเทพ</button>
       <button class="grp-btn" id="${contentId}-city-ptt">พัทยา</button>
+      <button class="btn-refresh" id="${contentId}-export" style="margin-left:auto">⬇ Export Excel</button>
     </div>
     <div class="alert-controls">
       <div class="alert-field"><label>กำไร/หน่วยลดลงเกิน (%)</label><input type="number" id="th-gpu" value="5" min="0" max="100"></div>
       <div class="alert-field"><label>กำไรรวมลดลงเกิน (%)</label><input type="number" id="th-profit" value="5" min="0" max="100"></div>
-      <div class="alert-field"><label>จำนวนขายลดลงเกิน (%)</label><input type="number" id="th-qty" value="5" min="0" max="100"></div>
       <div class="alert-field"><label>ยอดขายเซลลดลงเกิน (%)</label><input type="number" id="th-sale" value="5" min="0" max="100"></div>
       <div class="alert-leg"><span>MoM = เทียบเดือนก่อนหน้า</span><span>YoY = เทียบเดือนเดียวกันปีก่อน</span></div>
     </div>
@@ -1259,7 +1302,8 @@ function renderAlertPage(bkkMainRows, pttMainRows, bkkOtherRows, pttOtherRows, c
     document.getElementById(contentId+'-city-bkk').classList.remove('active');
     renderLists();
   };
-  ['th-gpu','th-profit','th-qty','th-sale'].forEach(id=>{
+  document.getElementById(contentId+'-export').onclick = exportXlsx;
+  ['th-gpu','th-profit','th-sale'].forEach(id=>{
     document.getElementById(id).addEventListener('input', renderLists);
   });
   renderLists();
