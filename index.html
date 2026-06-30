@@ -189,6 +189,26 @@ tr.tot td.L { font-family:var(--font) }
 .pie-leg-name { flex:1; color:var(--text) }
 .pie-leg-val { font-family:var(--mono); font-size:.7rem; color:var(--muted); font-weight:600 }
 
+/* ALERT PAGE */
+.alert-controls { display:flex; gap:14px; flex-wrap:wrap; align-items:flex-end; padding:14px 16px; background:var(--bg); border:1px solid var(--border); border-radius:var(--r); margin-bottom:16px }
+.alert-field { display:flex; flex-direction:column; gap:4px }
+.alert-field label { font-size:.68rem; color:var(--muted); font-weight:600 }
+.alert-field input { width:64px; padding:5px 7px; border:1px solid var(--border); border-radius:6px; font-family:var(--mono); font-size:.78rem }
+.alert-leg { margin-left:auto; display:flex; gap:14px; font-size:.7rem; color:var(--muted); align-items:center }
+.alert-sec-title { font-size:.84rem; font-weight:700; margin:18px 0 8px; padding-left:10px; border-left:3px solid var(--accent); display:flex; align-items:center; gap:8px }
+.alert-row { display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--border); border-radius:8px; margin-bottom:6px; background:var(--bg); flex-wrap:wrap }
+.alert-name { flex:1; min-width:180px }
+.alert-name .nm { font-size:.83rem; font-weight:600 }
+.alert-name .grp { font-size:.68rem; color:var(--muted) }
+.alert-name .sug { font-size:.68rem; color:#92400e; margin-top:3px; line-height:1.5 }
+.alert-pct { text-align:right; min-width:64px }
+.alert-pct .v { font-family:var(--mono); font-size:.78rem; font-weight:600 }
+.alert-pct .lbl { font-size:.62rem; color:var(--muted2) }
+.alert-badge { font-size:.62rem; padding:2px 7px; border-radius:20px; font-weight:600; margin-left:5px; white-space:nowrap }
+.ab-warn { background:#fef3c7; color:#92400e }
+.ab-danger { background:#fee2e2; color:var(--red) }
+.alert-empty { font-size:.75rem; color:var(--muted); padding:8px 0 }
+
 @media(max-width:900px) { .cards { grid-template-columns:repeat(3,1fr) } }
 @media(max-width:640px) {
   .cards { grid-template-columns:1fr 1fr }
@@ -218,6 +238,7 @@ tr.tot td.L { font-family:var(--font) }
       <div class="nav-tab" id="tab3" onclick="go(3)">หน้า 4 · สินค้าอื่น พัทยา</div>
       <div class="nav-tab" id="tab4" onclick="go(4)">หน้า 5 · รายสินค้า กรุงเทพ</div>
       <div class="nav-tab" id="tab5" onclick="go(5)">หน้า 6 · รายสินค้า พัทยา</div>
+      <div class="nav-tab" id="tab6" onclick="go(6)">หน้า 7 · แจ้งเตือน</div>
     </div>
   </div>
 </div>
@@ -262,6 +283,13 @@ tr.tot td.L { font-family:var(--font) }
   <div class="page-title">รายสินค้า — พัทยา</div>
   <div class="page-sub">รายละเอียดรายสินค้าแยกตามกลุ่ม · หน่วย: บาท</div>
   <div id="ptt-detail-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูล...</span></div></div>
+</div>
+
+<!-- PAGE 7 -->
+<div class="page" id="p6">
+  <div class="page-title">แจ้งเตือนรายการที่กำไร/ยอดขายลดลง</div>
+  <div class="page-sub">เทียบเดือนล่าสุดกับเดือนก่อนหน้า (MoM) และเดือนเดียวกันปีก่อน (YoY) · เฉพาะสินค้าหลัก</div>
+  <div id="alert-content"><div class="loading-wrap"><div class="spinner"></div><span>กำลังดึงข้อมูล...</span></div></div>
 </div>
 
 <script>
@@ -1035,6 +1063,198 @@ function renderDetail(mainRows, otherRows, contentId, city) {
 }
 
 // ══════════════════════════════════════════════
+//  PARSE + RENDER ALERT PAGE (หน้า 7)
+// ══════════════════════════════════════════════
+function parseAlertItems(rows) {
+  // ใช้โครงสร้างเดียวกับ parseMainDetail: A=กลุ่ม,B=เดือน,C=รหัส,D=รายละเอียด,E=หน่วย,
+  // F=ต้นทุน68,G=ต้นทุน69,H=จำนวน68,I=จำนวน69,K=กำไรรวม68,L=กำไรรวม69,M=ราคา68,N=ราคา69,O=ยอดเซล68,P=ยอดเซล69
+  if (!rows || rows.length < 2) return [];
+  const dataRows = rows.slice(1).filter(r => r[0] && r[3]);
+  const items = {};
+  for (const r of dataRows) {
+    const grp = r[0]||''; const mon = n(r[1])||0; const sku = r[2]||''; const desc = r[3]||'';
+    const key = `${sku}__${desc}`;
+    if (!items[key]) items[key] = { grp, desc, months: {} };
+    if (!items[key].months[mon]) items[key].months[mon] = {
+      cost68:0,cost69:0,price68:n(r[12]),price69:n(r[13]),
+      qty68:0,qty69:0,profit68:0,profit69:0,sale68:0,sale69:0
+    };
+    const m = items[key].months[mon];
+    m.cost68 = n(r[5]); m.cost69 = n(r[6]);
+    m.price68 = n(r[12]); m.price69 = n(r[13]);
+    m.qty68 += (n(r[7])||0); m.qty69 += (n(r[8])||0);
+    m.profit68 += (n(r[10])||0); m.profit69 += (n(r[11])||0);
+    m.sale68 += (n(r[14])||0); m.sale69 += (n(r[15])||0);
+  }
+
+  const pct = (cur, prev) => (prev===null||prev===undefined||prev===0||cur===null||cur===undefined) ? null : (cur-prev)/Math.abs(prev)*100;
+
+  const out = [];
+  for (const key in items) {
+    const it = items[key];
+    let lastMon = 0;
+    for (let m=1; m<=12; m++) { if (it.months[m] && (it.months[m].qty69||0) > 0) lastMon = m; }
+    if (!lastMon) continue;
+    const cur = it.months[lastMon];
+    const curGpu = (cur.price69!=null && cur.cost69!=null) ? cur.price69-cur.cost69 : null;
+
+    // YoY: เดือนเดียวกัน ปีก่อน
+    const yoyGpu = (cur.price68!=null && cur.cost68!=null) ? cur.price68-cur.cost68 : null;
+    const yoy = {
+      gpu: pct(curGpu, yoyGpu),
+      profit: pct(cur.profit69, cur.profit68),
+      qty: pct(cur.qty69, cur.qty68),
+      sale: pct(cur.sale69, cur.sale68)
+    };
+
+    // MoM: เดือนก่อนหน้า (ถ้าเดือน1 ใช้ ธ.ค. ปีก่อนแทน)
+    let prevGpu=null, prevProfit=null, prevQty=null, prevSale=null;
+    if (lastMon > 1 && it.months[lastMon-1]) {
+      const p = it.months[lastMon-1];
+      prevGpu = (p.price69!=null && p.cost69!=null) ? p.price69-p.cost69 : null;
+      prevProfit = p.profit69; prevQty = p.qty69; prevSale = p.sale69;
+    } else if (it.months[12]) {
+      const p = it.months[12];
+      prevGpu = (p.price68!=null && p.cost68!=null) ? p.price68-p.cost68 : null;
+      prevProfit = p.profit68; prevQty = p.qty68; prevSale = p.sale68;
+    }
+    const mom = {
+      gpu: pct(curGpu, prevGpu),
+      profit: pct(cur.profit69, prevProfit),
+      qty: pct(cur.qty69, prevQty),
+      sale: pct(cur.sale69, prevSale)
+    };
+
+    out.push({
+      key, grp: it.grp, desc: it.desc, lastMon,
+      gpu: curGpu, profit: cur.profit69, qty: cur.qty69, sale: cur.sale69,
+      mom, yoy
+    });
+  }
+  return out;
+}
+
+function classifyAlert(item) {
+  const { gpu, profit, qty, sale } = item.mom;
+  let main = '';
+  if (gpu!==null && qty!==null && gpu<0 && qty<0) {
+    main = 'ตรวจสอบสาเหตุอื่น ไม่ใช่ราคา';
+  } else if (gpu!==null && qty!==null && profit!==null && gpu<0 && qty>0 && profit<0) {
+    main = 'ลดราคาเกินไป ทบทวนส่วนลด';
+  } else if (gpu!==null && qty!==null && profit!==null && gpu<0 && qty>0 && profit>=0) {
+    main = 'โอเค ราคาที่ลดช่วยดันยอดขาย';
+  } else if (gpu!==null && qty!==null && sale!==null && gpu>0 && qty<0 && sale<0) {
+    main = 'พิจารณาปรับราคาลง / ทบทวนการขึ้นราคา';
+  } else if (gpu!==null && qty!==null && profit!==null && gpu>=0 && qty>=0 && profit>=0) {
+    main = 'ดีต่อเนื่อง ไม่ต้องทำอะไร';
+  }
+  let note = '';
+  if (qty!==null && sale!==null) {
+    if (qty<0 && sale<0) note = 'ยอดเซลก็ลดด้วย ยิ่งน่าเป็นห่วง';
+    else if (qty<0 && sale>=0) note = 'ยอดเซลยังโต ปัญหาอาจเฉพาะช่องทางอื่น';
+    else if (qty>=0 && sale<0) note = 'ระวัง ยอดเซลเริ่มลดทั้งที่ภาพรวมยังดี';
+    else if (qty>=0 && sale>=0) note = 'ยอดเซลก็เพิ่มด้วย ยืนยันเทรนด์จริง';
+  }
+  let badge = '';
+  if (gpu!==null && qty!==null && gpu>=10 && qty<=-10) {
+    badge = sale!==null && sale<0 ? 'danger' : 'warn';
+  }
+  return { main, note, badge };
+}
+
+function alertPctHtml(v) {
+  if (v===null||v===undefined||isNaN(v)) return '<span class="v" style="color:var(--muted2)">—</span>';
+  const cls = v<0 ? 'c-red' : (v>0 ? 'c-green' : '');
+  return `<span class="v ${cls}">${v>=0?'+':''}${v.toFixed(1)}%</span>`;
+}
+
+function renderAlertPage(bkkRows, pttRows, contentId) {
+  const itemsBkk = parseAlertItems(bkkRows);
+  const itemsPtt = parseAlertItems(pttRows);
+  let activeCity = 'bkk';
+
+  function getItems() { return activeCity==='bkk' ? itemsBkk : itemsPtt; }
+
+  function buildRow(item, kind) {
+    const c = classifyAlert(item);
+    let mainVal = '';
+    if (kind==='gpu') mainVal = fmt2(item.gpu)+' /หน่วย';
+    if (kind==='profit') mainVal = fmt(item.profit)+' บาท';
+    if (kind==='qty') mainVal = fmt(item.qty)+' หน่วย';
+    if (kind==='sale') mainVal = fmt(item.sale)+' บาท';
+    let badgeHtml = '';
+    if (c.badge==='warn') badgeHtml += `<span class="alert-badge ab-warn">ขึ้นราคา ลูกค้าหาย</span>`;
+    if (c.badge==='danger') badgeHtml += `<span class="alert-badge ab-warn">ขึ้นราคา ลูกค้าหาย</span><span class="alert-badge ab-danger">ไม่ยั่งยืน</span>`;
+    let sugText = c.main;
+    if (c.note) sugText += (sugText ? ' ' : '') + `(${c.note})`;
+    return `<div class="alert-row">
+      <div class="alert-name">
+        <div class="nm">${item.desc}${badgeHtml}</div>
+        <div class="grp">${item.grp} · เดือน ${MONTHS_TH[item.lastMon-1]}/2569 · ${mainVal}</div>
+        ${sugText ? `<div class="sug">💡 ${sugText}</div>` : ''}
+      </div>
+      <div class="alert-pct">${alertPctHtml(item.mom[kind])}<div class="lbl">MoM</div></div>
+      <div class="alert-pct">${alertPctHtml(item.yoy[kind])}<div class="lbl">YoY</div></div>
+    </div>`;
+  }
+
+  function buildSection(title, icon, items, kind) {
+    if (!items.length) return `<div class="alert-sec-title">${icon} ${title} (0)</div><div class="alert-empty">ไม่มีรายการเข้าเกณฑ์</div>`;
+    return `<div class="alert-sec-title">${icon} ${title} (${items.length})</div>` + items.map(it=>buildRow(it,kind)).join('');
+  }
+
+  function renderLists() {
+    const thGpu = parseFloat(document.getElementById('th-gpu').value)||0;
+    const thProfit = parseFloat(document.getElementById('th-profit').value)||0;
+    const thQty = parseFloat(document.getElementById('th-qty').value)||0;
+    const thSale = parseFloat(document.getElementById('th-sale').value)||0;
+    const items = getItems();
+
+    const gpuDown = items.filter(it => it.mom.gpu!==null && it.mom.gpu <= -thGpu);
+    const profitDown = items.filter(it => it.mom.profit!==null && it.mom.profit <= -thProfit);
+    const qtyDown = items.filter(it => it.mom.qty!==null && it.mom.qty <= -thQty);
+    const saleDown = items.filter(it => it.mom.sale!==null && it.mom.sale <= -thSale);
+
+    document.getElementById(contentId+'-lists').innerHTML =
+      buildSection('กำไร/หน่วยลดลง','📉', gpuDown, 'gpu') +
+      buildSection('กำไรรวมลดลง','💰', profitDown, 'profit') +
+      buildSection('จำนวนขายลดลง','📦', qtyDown, 'qty') +
+      buildSection('ยอดขายเซลลดลง','🏷️', saleDown, 'sale');
+  }
+
+  document.getElementById(contentId).innerHTML = `
+    <div class="grp-filter">
+      <button class="grp-btn active" id="${contentId}-city-bkk">กรุงเทพ</button>
+      <button class="grp-btn" id="${contentId}-city-ptt">พัทยา</button>
+    </div>
+    <div class="alert-controls">
+      <div class="alert-field"><label>กำไร/หน่วยลดลงเกิน (%)</label><input type="number" id="th-gpu" value="5" min="0" max="100"></div>
+      <div class="alert-field"><label>กำไรรวมลดลงเกิน (%)</label><input type="number" id="th-profit" value="5" min="0" max="100"></div>
+      <div class="alert-field"><label>จำนวนขายลดลงเกิน (%)</label><input type="number" id="th-qty" value="5" min="0" max="100"></div>
+      <div class="alert-field"><label>ยอดขายเซลลดลงเกิน (%)</label><input type="number" id="th-sale" value="5" min="0" max="100"></div>
+      <div class="alert-leg"><span>MoM = เทียบเดือนก่อนหน้า</span><span>YoY = เทียบเดือนเดียวกันปีก่อน</span></div>
+    </div>
+    <div id="${contentId}-lists"></div>`;
+
+  document.getElementById(contentId+'-city-bkk').onclick = function(){
+    activeCity='bkk';
+    this.classList.add('active');
+    document.getElementById(contentId+'-city-ptt').classList.remove('active');
+    renderLists();
+  };
+  document.getElementById(contentId+'-city-ptt').onclick = function(){
+    activeCity='ptt';
+    this.classList.add('active');
+    document.getElementById(contentId+'-city-bkk').classList.remove('active');
+    renderLists();
+  };
+  ['th-gpu','th-profit','th-qty','th-sale'].forEach(id=>{
+    document.getElementById(id).addEventListener('input', renderLists);
+  });
+  renderLists();
+}
+
+// ══════════════════════════════════════════════
 //  LOAD ALL DATA
 // ══════════════════════════════════════════════
 let dataCache = null;
@@ -1065,12 +1285,14 @@ async function loadData(force=false) {
     renderDetail(bkkDetailRows, bkkOtherRows, 'bkk-detail-content', 'กรุงเทพ');
     // หน้า 6 · รายสินค้า พัทยา
     renderDetail(pttDetailRows, pttOtherRows, 'ptt-detail-content', 'พัทยา');
+    // หน้า 7 · แจ้งเตือน
+    renderAlertPage(bkkDetailRows, pttDetailRows, 'alert-content');
 
     dataCache = true;
   } catch(e) {
     console.error(e);
     const errHtml = `<div class="err-box">⚠️ โหลดข้อมูลไม่ได้: ${e.message}<br>ตรวจสอบว่า Google Sheet ตั้งค่า "เผยแพร่สู่สาธารณะ" แล้ว</div>`;
-    ['bkk-content','bkk-other-content','ptt-content','ptt-other-content','bkk-detail-content','ptt-detail-content'].forEach(id=>{
+    ['bkk-content','bkk-other-content','ptt-content','ptt-other-content','bkk-detail-content','ptt-detail-content','alert-content'].forEach(id=>{
       document.getElementById(id).innerHTML = errHtml;
     });
   } finally {
